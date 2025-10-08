@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CourseList from "./components/CourseList";
 import ScheduleGrid from "./components/ScheduleGrid";
+import AddClassForm from "./components/AddClassForm";
 
 const sampleCourses = [
   { id: 1, name: "CS 101", days: ["Mon", "Wed", "Fri"], time: "10:00-11:00" },
@@ -26,6 +27,7 @@ export default function App() {
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h1>Course Schedule Builder</h1>
+      <AddClassForm onAdd={addCourse} />
       <CourseList courses={sampleCourses} onAdd={addCourse} />
       <hr style={{ margin: "2rem 0" }} />
       <ScheduleGrid courses={schedule} onRemove={removeCourse} />
