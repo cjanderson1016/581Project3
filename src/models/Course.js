@@ -1,0 +1,13 @@
+export default class Course {
+  constructor(id, name, department, code, credits, days, start_time, end_time, instructor) {
+    this.id = id; // unique enough for now
+    this.name = name;
+    this.department = department;
+    this.code = code;
+    this.credits = credits;
+    this.days = days; // array like ["Mon", "Wed", "Fri"]
+    this.start_time = start_time;
+    this.end_time = end_time;
+    this.instructor = instructor
+  }
+}

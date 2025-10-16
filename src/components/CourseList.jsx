@@ -7,7 +7,7 @@ export default function CourseList({ courses, onAdd }) {
       <ul>
         {courses.map((course) => (
           <li key={course.id} style={{ marginBottom: "0.5rem" }}>
-            <b>{course.name}</b> — {course.days.join(", ")} {course.time}{" "}
+            <b>{course.department} {course.code}</b> — <b>{course.name}</b> — {course.days.join(", ")} @ {course.start_time} - {course.end_time} with {course.instructor}{" "}
             <button onClick={() => onAdd(course)}>Add</button>
           </li>
         ))}
