@@ -10,7 +10,7 @@ export default function ScheduleGrid({ courses, onRemove }) {
         <ul>
           {courses.map((course) => (
             <li key={course.id} style={{ marginBottom: "0.5rem" }}>
-              <b>{course.department} {course.code}</b> — <b>{course.name}</b> — {course.days.join(", ")} @ {course.start_time} - {course.end_time} with {course.instructor}{" "}
+              <b>{course.subject} {course.course_number}</b> — <b>{course.title}</b> — {course.days} @ {course.start_time} - {course.end_time} with {course.instructor}{" "}
               <button onClick={() => onRemove(course.id)}>Remove</button>
             </li>
           ))}

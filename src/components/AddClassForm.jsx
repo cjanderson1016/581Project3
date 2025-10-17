@@ -2,6 +2,8 @@
 import { useState } from "react";
 import Course from "../models/Course";
 
+// TODO: This component needs to be updated to match the backend Course data model
+
 export default function AddClassForm({ onAdd }) {
   const [name, setName] = useState("");
   const [department, setDepartment] = useState("");
@@ -21,8 +23,7 @@ export default function AddClassForm({ onAdd }) {
       return;
     }
 
-    const dayList = days.split(",").map((d) => d.trim()); // format the days list
-    const newClass = new Course(0, name, department, code, credits, dayList, start_time, end_time, instructor); // remeber to handle 0 ids (assign next available id) on backend
+    const newClass = new Course(0, name, department, code, credits, days, start_time, end_time, instructor); // remeber to handle 0 ids (assign next available id) on backend
     onAdd(newClass);
     // TODO: send class to backend to save it permenantly to the database (to the global list for admin users; to personal data for students)
     // currently this just add the class to the schedule grid temporarily
@@ -75,11 +76,11 @@ export default function AddClassForm({ onAdd }) {
           />
         </div>
         <div>
-          <label>Days (comma separated): </label>
+          <label>Days: </label>
           <input
             value={days}
             onChange={(e) => setDays(e.target.value)}
-            placeholder="e.g. Mon, Wed, Fri"
+            placeholder="Substrings of 'SuMTuWThFSa' (most commonly 'MWF' or 'TuTh') -- leave blank in the case of APPT"
           />
         </div>
         <div>
