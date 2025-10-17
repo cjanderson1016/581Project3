@@ -4,9 +4,9 @@ import ScheduleGrid from "./components/ScheduleGrid";
 import AddClassForm from "./components/AddClassForm";
 
 const sampleCourses = [
-  { id: 1, subject: "CS", course_number: "101", days: "MWF", time: "10:00-11:00" },
-  { id: 2, subject: "MATH", course_number: "202", days: "TuTh", time: "9:00-10:30" },
-  { id: 3, subject: "ENG", course_number: "150", days: "MW", time: "13:00-14:15" },
+  { id: 1, subject: "CS", course_number: "101", title: "Computer Science 101", days: "MWF", start_time: "10:00 AM", end_time: "11:00 AM", instructor: "instructor, sample"},
+  { id: 2, subject: "MATH", course_number: "202", title: "College Algebra 2", days: "TuTh", start_time: "9:00 AM", end_time: "10:30 AM", instructor: "instructor, sample"},
+  { id: 3, subject: "ENG", course_number: "150", title: "English II", days: "MW", start_time: "1:00 PM", end_time: "2:45 PM", instructor: "instructor, sample"},
 ];
 
 export default function App() {
