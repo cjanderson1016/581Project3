@@ -1,6 +1,6 @@
 //ChatGPT
 import { useState } from "react";
-import type { Course } from "../App";
+import type { Course } from "../models/Course";
 
 interface AddClassFormProps {
   onAdd: (course: Course) => void;

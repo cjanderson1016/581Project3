@@ -1,6 +1,6 @@
 // placeholder to flesh out project file structure -- initial generation by ChatGPT
 // "courses" is being passed in here directly from the json from the backend (meaning its attributes do not need to line up with the class rn)
-import type { Course } from "../App";
+import type { Course } from "../models/Course";
 
 interface CourseListProps {
   courses: Course[];

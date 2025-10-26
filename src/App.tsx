@@ -2,17 +2,7 @@ import { useEffect, useState } from "react";
 import CourseList from "./components/CourseList";
 import ScheduleGrid from "./components/ScheduleGrid";
 import AddClassForm from "./components/AddClassForm";
-
-export interface Course {
-  id: number;
-  subject: string;
-  course_number: string;
-  title: string;
-  days: string;
-  start_time: string;
-  end_time: string;
-  instructor: string;
-}
+import type { Course } from "./models/Course";
 
 const sampleCourses: Course[] = [
   {

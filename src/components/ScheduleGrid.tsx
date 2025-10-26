@@ -1,6 +1,6 @@
 // placeholder to flesh out project file structure// placeholder to flesh out project file structure -- initial generation by ChatGPT
 
-import type { Course } from "../App";
+import type { Course } from "../models/Course";
 
 interface ScheduleGridProps {
   courses: Course[];
