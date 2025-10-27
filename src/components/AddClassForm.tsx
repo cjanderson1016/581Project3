@@ -1,10 +1,12 @@
 //ChatGPT
 import { useState } from "react";
-import Course from "../models/Course";
+import type { Course } from "../models/Course";
 
-// TODO: This component needs to be updated to match the backend Course data model
+interface AddClassFormProps {
+  onAdd: (course: Course) => void;
+}
 
-export default function AddClassForm({ onAdd }) {
+export default function AddClassForm({ onAdd }: AddClassFormProps) {
   const [name, setName] = useState("");
   const [department, setDepartment] = useState("");
   const [code, setCode] = useState("");
@@ -14,21 +16,37 @@ export default function AddClassForm({ onAdd }) {
   const [end_time, setEndTime] = useState("");
   const [instructor, setInstructor] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ensure all fields are filled out before submitting
-    if (!name || !department || !code || !credits || !days || !start_time || !end_time || !instructor) {
+    if (
+      !name ||
+      !department ||
+      !code ||
+      !credits ||
+      !days ||
+      !start_time ||
+      !end_time ||
+      !instructor
+    ) {
       alert("Please fill in all fields.");
       return;
     }
 
-    const newClass = new Course(0, name, department, code, credits, days, start_time, end_time, instructor); // remeber to handle 0 ids (assign next available id) on backend
-    onAdd(newClass);
-    // TODO: send class to backend to save it permenantly to the database (to the global list for admin users; to personal data for students)
-    // currently this just add the class to the schedule grid temporarily
+    const newClass: Course = {
+      id: Math.floor(Math.random() * 1000000),
+      subject: department,
+      course_number: code,
+      title: name,
+      days,
+      start_time,
+      end_time,
+      instructor,
+    };
 
-    // Clear form after submission
+    onAdd(newClass);
+
+    // Clear form
     setName("");
     setDepartment("");
     setCode("");
@@ -68,7 +86,7 @@ export default function AddClassForm({ onAdd }) {
           />
         </div>
         <div>
-          <label>Credits (integer value): </label>
+          <label>Credits: </label>
           <input
             value={credits}
             onChange={(e) => setCredits(e.target.value)}
@@ -80,7 +98,7 @@ export default function AddClassForm({ onAdd }) {
           <input
             value={days}
             onChange={(e) => setDays(e.target.value)}
-            placeholder="Substrings of 'SuMTuWThFSa' (most commonly 'MWF' or 'TuTh') -- leave blank in the case of APPT"
+            placeholder="e.g. MWF or TuTh"
           />
         </div>
         <div>
