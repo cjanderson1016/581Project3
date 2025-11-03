@@ -1,7 +1,14 @@
+/*
+ * main.tsx
+ * Date: November 3, 2025
+ * Description: Application entry point with React Router setup
+ */
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import "./index.css";
-import App from "./App";
+import Router from "./Router";
 
 const rootElement = document.getElementById("root");
 
@@ -11,6 +18,8 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <Router />
+    </BrowserRouter>
   </StrictMode>
 );
