@@ -27,6 +27,19 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
+/* Day labels above columns */
+.day-label {
+  position: absolute;
+  top: 2%;
+  width: 10%;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
 /* Individual time blocks with different colors */
 .time-block {
   position: absolute;

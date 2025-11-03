@@ -10,6 +10,13 @@ export default function AuthIllustration() {
   return (
     <div className="illustration-container">
       <div className="schedule-mockup">
+        {/* Day labels above each column */}
+        <div className="day-label" style={{ left: '3%' }}>M</div>
+        <div className="day-label" style={{ left: '22%' }}>T</div>
+        <div className="day-label" style={{ left: '41%' }}>W</div>
+        <div className="day-label" style={{ left: '60%' }}>TH</div>
+        <div className="day-label" style={{ left: '79%' }}>F</div>
+
         {/* Abstract time blocks representing a 5-day weekly schedule - well spaced */}
 
         {/* Monday blocks - far left */}
