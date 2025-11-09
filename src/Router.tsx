@@ -8,7 +8,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import App from "./App";
+import ScheduleBuilder from "./pages/ScheduleBuilder";
 
 export default function Router() {
   return (
@@ -27,7 +27,7 @@ export default function Router() {
        * TEMPORARY: /builder route to access original course schedule builder
        * TODO: Remove this route once dashboard integration is complete
        */}
-      <Route path="/builder" element={<App />} /> {/* Original course schedule builder (TEMPORARY) */}
+      <Route path="/builder" element={<ScheduleBuilder />} /> {/* Original course schedule builder (TEMPORARY) */}
       
                   {/* Catch-all route - redirect to login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
