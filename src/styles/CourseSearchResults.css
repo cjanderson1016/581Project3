@@ -1,0 +1,143 @@
+/*
+ * CourseSearchResults.css
+ * Date: November 8, 2025
+ * Description: Dropdown styling for course search results
+ */
+
+/* Dropdown Container */
+.course-search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 12px;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 0.75rem;
+  max-height: 350px;
+  overflow-y: auto;
+  margin-top: 0.5rem;
+  z-index: 1000;
+}
+
+/* Search Results Header */
+.search-results-header {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.results-count {
+  color: #667eea;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Loading State */
+.search-loading {
+  color: #666;
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.9rem;
+}
+
+/* Search Results List */
+.search-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Individual Result Item */
+.search-result-item {
+  background: white;
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.search-result-item:hover {
+  background: rgba(102, 126, 234, 0.05);
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+/* Result Info */
+.search-result-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.search-result-code {
+  color: #667eea;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.search-result-title {
+  color: #333;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.search-result-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.search-result-time,
+.search-result-instructor {
+  color: #666;
+  font-size: 0.75rem;
+}
+
+/* Add Button */
+.search-result-add-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.search-result-add-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.search-result-add-btn:active {
+  transform: scale(0.98);
+}
+
+/* Scrollbar Styling */
+.course-search-results::-webkit-scrollbar {
+  width: 8px;
+}
+
+.course-search-results::-webkit-scrollbar-track {
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 10px;
+}
+
+.course-search-results::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.2);
+  border-radius: 10px;
+}
+
+.course-search-results::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.3);
+}

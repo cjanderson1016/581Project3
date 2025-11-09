@@ -13,6 +13,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import Router from "./Router";
+import ScheduleBuilder from "./pages/ScheduleBuilder";
 
 const rootElement = document.getElementById("root"); // Get root DOM element
 
