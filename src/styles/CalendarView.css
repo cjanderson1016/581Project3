@@ -1,0 +1,126 @@
+/*
+ * CalendarView.css
+ * Date: November 8, 2025
+ * Description: Styling for FullCalendar integration with purple gradient theme
+ */
+
+.calendar-view-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+/* FullCalendar overrides for purple theme */
+.fc {
+  font-family: inherit;
+}
+
+/* Header styling */
+.fc .fc-col-header-cell {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.2);
+  font-weight: 600;
+  color: #667eea;
+  padding: 0.5rem;
+}
+
+/* Time grid styling */
+.fc .fc-timegrid-slot {
+  height: 60px;
+  border-color: rgba(102, 126, 234, 0.1);
+}
+
+.fc .fc-timegrid-slot-label {
+  border-color: rgba(102, 126, 234, 0.1);
+  color: #666;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Day columns */
+.fc .fc-timegrid-col {
+  border-color: rgba(102, 126, 234, 0.1);
+}
+
+/* Event styling */
+.fc-event {
+  border-radius: 8px !important;
+  border: none !important;
+  padding: 0.25rem 0.5rem !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fc-event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.fc-event .fc-event-main {
+  color: white;
+}
+
+.fc-event .fc-event-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.fc-event .fc-event-time {
+  font-size: 0.7rem;
+  opacity: 0.9;
+}
+
+/* Table borders */
+.fc .fc-scrollgrid {
+  border-color: rgba(102, 126, 234, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Remove default borders we don't want */
+.fc .fc-scrollgrid-section > * {
+  border-color: rgba(102, 126, 234, 0.1);
+}
+
+/* Scrollbar styling */
+.fc-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.fc-scroller::-webkit-scrollbar-track {
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 10px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.2);
+  border-radius: 10px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.3);
+}
+
+/* Today highlight (if viewing current week) */
+.fc .fc-day-today {
+  background: rgba(102, 126, 234, 0.05) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .calendar-view-container {
+    padding: 0.5rem;
+  }
+
+  .fc-event .fc-event-title {
+    font-size: 0.75rem;
+  }
+
+  .fc-event .fc-event-time {
+    font-size: 0.65rem;
+  }
+}
