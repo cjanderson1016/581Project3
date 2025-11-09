@@ -1,0 +1,322 @@
+/*
+ * Auth.css
+ * Date: October 28, 2025
+ * Description: Styling for login and signup pages with gradient theme and dark mode support
+ */
+
+/* Override body flex centering to make auth pages fill full width */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: block;
+}
+
+.auth-container {
+  width: 100vw; /* Force full viewport width */
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 40% 60%; /* 40% for form on gradient, 60% for illustration on black */
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  background: #000000; /* Black background for whole container */
+  overflow-x: hidden;
+}
+
+/* Left side - form on gradient background */
+.auth-left-side {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Gradient background for form side */
+}
+
+/* Right side - BLACK background with illustration */
+.auth-right-side {
+  position: relative; /* Required for absolute positioning of illustration */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 1rem; /* Reduced padding to give more space to schedule mockup */
+  background: #000000; /* Solid black background for schedule blocks */
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 3rem;
+  width: 100%;
+  max-width: 500px; /* Wider form card */
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+  color: #667eea;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.auth-header h2 {
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.auth-header p {
+  color: #666;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.form-input {
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  color: #333;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+.form-footer {
+  text-align: right;
+  margin-top: -0.5rem;
+}
+
+.forgot-password {
+  color: #667eea;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.auth-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.auth-button:active {
+  transform: translateY(0);
+}
+
+.auth-redirect {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.auth-redirect p {
+  color: #666;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.auth-link {
+  color: #667eea;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .auth-container {
+    gap: 2rem;
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-container {
+    grid-template-columns: 1fr; /* Stack vertically on mobile */
+    padding: 1rem;
+  }
+
+  .auth-right-side {
+    display: none; /* Hide illustration on small screens */
+  }
+
+  .auth-card {
+    padding: 2rem;
+  }
+
+  .auth-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .auth-header h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Dark mode support - matches existing theme */
+@media (prefers-color-scheme: dark) {
+  .auth-card {
+    background: rgba(36, 36, 36, 0.95);
+  }
+
+  .auth-header h1 {
+    color: #818cf8;
+  }
+
+  .auth-header h2 {
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+  .auth-header p {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .form-group label {
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+  .form-input {
+    background-color: #1a1a1a;
+    border-color: #444;
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+  .form-input:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+  }
+
+  .form-input::placeholder {
+    color: #666;
+  }
+
+  .auth-redirect {
+    border-top-color: #444;
+  }
+
+  .auth-redirect p {
+    color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* Loading state (for future implementation) */
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error message styles (for future implementation) */
+.error-message {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.success-message {
+  color: #10b981;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Password strength indicator (for future implementation) */
+.password-strength {
+  height: 4px;
+  border-radius: 2px;
+  margin-top: 0.5rem;
+  background-color: #e0e0e0;
+  overflow: hidden;
+}
+
+.password-strength-bar {
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.strength-weak {
+  background-color: #ef4444;
+}
+
+.strength-medium {
+  background-color: #f59e0b;
+}
+
+.strength-strong {
+  background-color: #10b981;
+}
