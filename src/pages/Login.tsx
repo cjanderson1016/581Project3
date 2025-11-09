@@ -48,7 +48,7 @@ export default function Login() {
     // TEMPORARY: Navigate to /builder page without validation
     // TODO: Replace with proper authentication and navigate to dashboard
     console.log("Login attempt with:", { email, password }); // Log credentials for debugging
-    navigate("/builder"); // Bypass validation and go to builder (TEMPORARY)
+    navigate("/dashboard"); // Bypass validation and go to builder (TEMPORARY)
   };
 
   return (

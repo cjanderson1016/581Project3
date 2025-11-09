@@ -76,7 +76,7 @@ export default function Signup() {
     // TEMPORARY: Navigate to /builder page without validation
     // TODO: Replace with proper validation, authentication and navigate to dashboard
     console.log("Signup attempt with:", { name, email, password }); // Log signup data for debugging
-    navigate("/builder"); // Bypass validation and go to builder (TEMPORARY)
+    navigate("/dashboard"); // Bypass validation and go to builder (TEMPORARY)
   };
 
   return (
