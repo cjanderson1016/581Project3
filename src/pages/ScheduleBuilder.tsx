@@ -53,6 +53,20 @@ export default function ScheduleBuilder() {
     return () => clearTimeout(delaySearch);
   }, [searchQuery]);
 
+  // Recompute possible schedules whenever selected courses change
+  useEffect(() => {
+    if (selectedCourses.length === 0) {
+      setPossibleSchedules([]);
+      setCurrentScheduleIndex(0);
+      return;
+    }
+
+    const schedules = generateSchedules(selectedCourses);
+    setPossibleSchedules(schedules);
+    setCurrentScheduleIndex(0);
+  }, [selectedCourses]);
+
+
   const handleAddCourse = (course: Course) => {
     // Check if course is already added
     const isDuplicate = selectedCourses.some((c) => c.id === course.id);
@@ -94,6 +108,16 @@ export default function ScheduleBuilder() {
     alert("Export feature coming soon!");
   };
 
+    const displayedCourses =
+    possibleSchedules.length > 0
+      ? possibleSchedules[currentScheduleIndex]
+      : selectedCourses;
+
+  const totalSchedules = possibleSchedules.length;
+  const currentDisplay =
+    totalSchedules === 0 ? "0 of 0" : `${currentScheduleIndex + 1} of ${totalSchedules}`;
+
+
   return (
     <div className="schedule-builder-container">
       <ScheduleHeader
@@ -125,7 +149,7 @@ export default function ScheduleBuilder() {
 
           {/* Selected Courses List (Glassmorphism) */}
           <SelectedCoursesList
-            courses={selectedCourses}
+            courses={displayedCourses}
             onRemoveCourse={handleRemoveCourse}
           />
         </aside>
@@ -134,10 +158,36 @@ export default function ScheduleBuilder() {
         <main className="schedule-content">
           {/* Schedule Navigation */}
           <div className="schedule-navigation">
-            <button className="nav-arrow-btn">←</button>
-            <span className="schedule-counter">0 of 0</span>
-            <button className="nav-arrow-btn">→</button>
+            <button
+              className="nav-arrow-btn"
+              onClick={() =>
+                setCurrentScheduleIndex((idx) => Math.max(0, idx - 1))
+    }
+              disabled={totalSchedules === 0 || currentScheduleIndex === 0}
+            >
+              ←
+            </button>
+
+            <span className="schedule-counter">{currentDisplay}</span>
+
+            <button
+              className="nav-arrow-btn"
+              onClick={() =>
+                setCurrentScheduleIndex((idx) =>
+                  totalSchedules === 0
+                    ? 0
+                    : Math.min(totalSchedules - 1, idx + 1)
+      )
+    }
+              disabled={
+                totalSchedules === 0 ||
+                currentScheduleIndex === totalSchedules - 1
+              }
+            >
+              →
+            </button>
           </div>
+
 
           {/* Action Buttons */}
           <div className="schedule-actions">
@@ -153,7 +203,7 @@ export default function ScheduleBuilder() {
           </div>
 
           <CalendarView
-            courses={selectedCourses}
+            courses={displayedCourses}
             onRemoveCourse={handleRemoveCourse}
           />
         </main>
