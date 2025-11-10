@@ -12,6 +12,8 @@ import CourseSearchResults from "../components/CourseSearchResults";
 import type { Course } from "../models/Course";
 import { searchCourses } from "../services/courseService";
 import "../styles/ScheduleBuilder.css";
+import { generateSchedules } from "../utils/scheduleGenerator";
+
 
 export default function ScheduleBuilder() {
   const [scheduleName, setScheduleName] = useState("Schedule Builder");
