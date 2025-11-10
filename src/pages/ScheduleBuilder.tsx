@@ -22,6 +22,8 @@ export default function ScheduleBuilder() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Course[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [possibleSchedules, setPossibleSchedules] = useState<Course[][]>([]);
+  const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
 
   // TODO: Replace with Django backend fetch
   // Search courses with debouncing
