@@ -1,9 +1,20 @@
+/*
+ * main.tsx
+ * Date: Novemember 09, 2025
+ * Description: Application entry point with React Router setup
+ *
+ * NOTE: Routing is enabled here to allow viewing/testing of login/signup pages
+ * The /builder route is temporary to keep the original course builder accessible
+ * This routing setup will be replaced when dashboard integration is implemented
+ */
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import "./index.css";
-import App from "./App";
+import Router from "./Router";
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById("root"); // Get root DOM element
 
 if (!rootElement) {
   throw new Error("Root element not found");
@@ -11,6 +22,8 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <Router />
+    </BrowserRouter>
   </StrictMode>
 );

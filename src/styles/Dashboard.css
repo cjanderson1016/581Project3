@@ -1,0 +1,396 @@
+/*
+ * Dashboard.css
+ * Date: November 3, 2025
+ * Description: Styling for dashboard page with purple gradient theme matching auth pages
+ */
+
+/* Main Dashboard Container */
+.dashboard-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0;
+  margin: 0;
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-title {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Sign In Button */
+.sign-in-button {
+  background: rgba(255, 255, 255, 0.95);
+  color: #667eea;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.sign-in-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 1);
+}
+
+.sign-in-button:active {
+  transform: translateY(0);
+}
+
+/* Profile Icon */
+.profile-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-icon svg {
+  color: #667eea;
+}
+
+.profile-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 1);
+}
+
+/* Main Content Area */
+.dashboard-main {
+  padding: 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Schedules Grid */
+.schedules-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Schedule Card - Base Styles */
+.schedule-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 1.2rem;
+  min-height: 224px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.schedule-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* New Schedule Card */
+.new-schedule-card {
+  border: 2px dashed rgba(102, 126, 234, 0.4);
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.new-schedule-card:hover {
+  border-color: rgba(102, 126, 234, 0.8);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.new-schedule-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.new-schedule-icon svg {
+  color: white;
+}
+
+.new-schedule-card:hover .new-schedule-icon {
+  transform: rotate(90deg) scale(1.1);
+}
+
+.new-schedule-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #667eea;
+  margin: 0;
+}
+
+/* Schedule Preview */
+.schedule-preview {
+  flex: 1;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 12px;
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+  position: relative;
+  min-height: 128px;
+}
+
+.preview-grid {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-block {
+  position: absolute;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+}
+
+/* Color variations for preview blocks - matching auth illustration */
+.preview-block:nth-child(1) {
+  background: rgba(102, 126, 234, 0.8);
+}
+.preview-block:nth-child(2) {
+  background: rgba(139, 92, 246, 0.8);
+}
+.preview-block:nth-child(3) {
+  background: rgba(118, 75, 162, 0.8);
+}
+.preview-block:nth-child(4) {
+  background: rgba(129, 140, 248, 0.8);
+}
+.preview-block:nth-child(5) {
+  background: rgba(147, 51, 234, 0.8);
+}
+.preview-block:nth-child(6) {
+  background: rgba(109, 40, 217, 0.8);
+}
+
+.schedule-card:hover .preview-block {
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+/* Schedule Info */
+.schedule-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.schedule-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.schedule-meta {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Empty Card */
+.empty-card {
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  cursor: default;
+}
+
+.empty-card:hover {
+  transform: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.empty-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+  .schedules-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .dashboard-main {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .schedules-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.3rem;
+  }
+
+  .dashboard-main {
+    padding: 1.5rem;
+  }
+
+  .schedules-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .schedule-card {
+    min-height: 192px;
+  }
+
+  .sign-in-button {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .profile-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .schedule-card {
+    background: rgba(36, 36, 36, 0.95);
+  }
+
+  .schedule-title {
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+  .schedule-meta {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .schedule-preview {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .new-schedule-card {
+    background: rgba(36, 36, 36, 0.85);
+    border-color: rgba(102, 126, 234, 0.4);
+  }
+
+  .new-schedule-card:hover {
+    background: rgba(36, 36, 36, 0.95);
+  }
+
+  .new-schedule-text {
+    color: #818cf8;
+  }
+
+  .sign-in-button {
+    background: rgba(36, 36, 36, 0.95);
+    color: #818cf8;
+  }
+
+  .sign-in-button:hover {
+    background: rgba(36, 36, 36, 1);
+  }
+
+  .profile-icon {
+    background: rgba(36, 36, 36, 0.95);
+  }
+
+  .profile-icon svg {
+    color: #818cf8;
+  }
+
+  .profile-icon:hover {
+    background: rgba(36, 36, 36, 1);
+  }
+
+  .empty-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .empty-card-content {
+    color: rgba(255, 255, 255, 0.4);
+  }
+}
