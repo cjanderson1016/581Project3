@@ -8,33 +8,39 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthIllustration from "../components/AuthIllustration";
 import "../styles/Auth.css";
+import AxiosInstance from "../components/AxiosInstance";
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("")
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    //Passwords the userputs in must match
+    if (password !== confirmPassword){
+      setError ("Need matching passwords!")
+      return;
+    }
+
+    // POST the user's data to the Register data model Uses AxiosInstance.tsx in the components folder
+    const api_response = await AxiosInstance.post("/api/register/",{
+      full_name: name,
+      email,
+      password
+    });
+    //Successful registration. User goes to login page
+    console.log("User Registered!");
+    navigate("/login"); 
     /*
      * TODO: Implement user registration logic
      *
      * 1. Email Validation:
-     *    - Must be a valid email format
-     *    - Check if email matches required domain (e.g., @university.edu for students, @staff.university.edu for instructors)
-     *    - Verify email doesn't already exist in database
-     *
-     * 2. Password Requirements:
-     *    - Minimum 8 characters
-     *    - Must contain at least one uppercase letter
-     *    - Must contain at least one lowercase letter
-     *    - Must contain at least one number
-     *    - Must contain at least one special character (@$!%*?&)
-     *    - Password and confirmPassword must match
-     *
+ 
      * 3. Name Validation:
      *    - Required field
      *    - Minimum 2 characters
@@ -60,23 +66,10 @@ export default function Signup() {
      *        - "Invalid email domain"
      *        - "Password does not meet requirements"
      *        - "Network error, please try again"
-     *
-     * 6. User Role Assignment:
-     *    - Determine if user is student or instructor based on email domain
-     *    - Students: Can create personal schedules
-     *    - Instructors/Admin: Can create and manage courses globally
-     *
-     * 7. Security Considerations:
-     *    - Implement CAPTCHA to prevent bot registrations
-     *    - Rate limit signup attempts
-     *    - Use HTTPS in production
-     *    - Consider email verification before account activation
      */
 
     // TEMPORARY: Navigate to /builder page without validation
     // TODO: Replace with proper validation, authentication and navigate to dashboard
-    console.log("Signup attempt with:", { name, email, password }); // Log signup data for debugging
-    navigate("/dashboard"); // Bypass validation and go to builder (TEMPORARY)
   };
 
   return (
@@ -114,10 +107,6 @@ export default function Signup() {
                 className="form-input"
               />
               {/*
-               * TODO: Add real-time email validation
-               * - Show green checkmark if valid domain
-               * - Show red X if invalid domain
-               * - Display helper text: "Must use university email address"
                */}
             </div>
 
@@ -132,14 +121,7 @@ export default function Signup() {
                 className="form-input"
               />
               {/*
-               * TODO: Add password strength indicator
-               * - Show strength meter (weak/medium/strong)
-               * - Display requirements checklist:
-               *   ✓ At least 8 characters
-               *   ✓ Contains uppercase letter
-               *   ✓ Contains lowercase letter
-               *   ✓ Contains number
-               *   ✓ Contains special character
+
                */}
             </div>
 
@@ -154,16 +136,12 @@ export default function Signup() {
                 className="form-input"
               />
               {/*
-               * TODO: Add real-time password match validation
-               * - Show green checkmark when passwords match
-               * - Show red X when passwords don't match
+ 
                */}
             </div>
 
             {/*
-             * TODO: Add Terms of Service and Privacy Policy checkboxes
-             * - Required checkbox for terms acceptance
-             * - Link to /terms and /privacy pages
+
              */}
 
             <button type="submit" className="auth-button">

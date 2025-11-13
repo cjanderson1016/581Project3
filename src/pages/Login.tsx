@@ -8,15 +8,24 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthIllustration from "../components/AuthIllustration";
 import "../styles/Auth.css";
-
+import AxiosInstance from "../components/AxiosInstance";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Authenticate the user's login request. Uses AxiosInstance.tsx in the components folder
+    const authenticate = await AxiosInstance.post("/api/login/",{
+    email,
+    password
+    });
+
+    //Successful login, should prob implement some errors at some point 
+    console.log("Login attempt with:", { email, password }); 
+    navigate("/dashboard");  // Go to dashboard
     /*
      * TODO: Implement authentication logic
      *
@@ -47,8 +56,6 @@ export default function Login() {
 
     // TEMPORARY: Navigate to /builder page without validation
     // TODO: Replace with proper authentication and navigate to dashboard
-    console.log("Login attempt with:", { email, password }); // Log credentials for debugging
-    navigate("/dashboard"); // Bypass validation and go to builder (TEMPORARY)
   };
 
   return (
