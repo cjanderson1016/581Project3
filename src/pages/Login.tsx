@@ -9,23 +9,35 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthIllustration from "../components/AuthIllustration";
 import "../styles/Auth.css";
 import AxiosInstance from "../components/AxiosInstance";
+import Alert from "../components/Alerts"
+import "../styles/Alerts.css"
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [showAlert, setShowAlert ] = useState(false);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Authenticate the user's login request. Uses AxiosInstance.tsx in the components folder
+    try{
+  
     const authenticate = await AxiosInstance.post("/api/login/",{
     email,
     password
     });
-
     //Successful login, should prob implement some errors at some point 
     console.log("Login attempt with:", { email, password }); 
     navigate("/dashboard");  // Go to dashboard
+
+    } catch (error){
+
+      alert("please try again!")
+      
+    }
+
     /*
      * TODO: Implement authentication logic
      *
@@ -80,7 +92,6 @@ export default function Login() {
                 placeholder="student@university.edu"
                 className="form-input"
               />
-              {/* TODO: Add email domain validation hint */}
             </div>
 
             <div className="form-group">

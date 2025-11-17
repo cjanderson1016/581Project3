@@ -14,7 +14,6 @@ import { searchCourses } from "../services/courseService";
 import "../styles/ScheduleBuilder.css";
 import { generateSchedules } from "../utils/scheduleGenerator";
 
-
 export default function ScheduleBuilder() {
   const [scheduleName, setScheduleName] = useState("Schedule Builder");
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
@@ -25,17 +24,13 @@ export default function ScheduleBuilder() {
   const [possibleSchedules, setPossibleSchedules] = useState<Course[][]>([]);
   const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
 
-  // TODO: Replace with Django backend fetch
   // Search courses with debouncing
   useEffect(() => {
     const delaySearch = setTimeout(async () => {
       if (searchQuery.trim().length > 0) {
         setIsSearching(true);
         try {
-          // TODO: Replace searchCourses() with Django API call:
-          // const response = await fetch(`http://127.0.0.1:8000/api/courses/?search=${searchQuery}`);
-          // const data = await response.json();
-          // setSearchResults(data);
+          // Query the backend for results
           const results = await searchCourses(searchQuery);
           setSearchResults(results);
         } catch (error) {
@@ -66,7 +61,6 @@ export default function ScheduleBuilder() {
     setCurrentScheduleIndex(0);
   }, [selectedCourses]);
 
-
   const handleAddCourse = (course: Course) => {
     // Check if course is already added
     const isDuplicate = selectedCourses.some((c) => c.id === course.id);
@@ -79,7 +73,7 @@ export default function ScheduleBuilder() {
   };
 
   const handleRemoveCourse = (courseId: number) => {
-    setSelectedCourses(selectedCourses.filter(c => c.id !== courseId));
+    setSelectedCourses(selectedCourses.filter((c) => c.id !== courseId));
   };
 
   const handleSave = () => {
@@ -108,15 +102,16 @@ export default function ScheduleBuilder() {
     alert("Export feature coming soon!");
   };
 
-    const displayedCourses =
-    possibleSchedules.length > 0
-      ? possibleSchedules[currentScheduleIndex]
-      : selectedCourses;
+  // ensures that if possibleSchedules[currentScheduleIndex] is undefined, it safely falls back to selectedCourses
+  // this guarantes displayedCourses is of type Course[]
+  const displayedCourses: Course[] =
+    possibleSchedules[currentScheduleIndex] ?? selectedCourses;
 
   const totalSchedules = possibleSchedules.length;
   const currentDisplay =
-    totalSchedules === 0 ? "0 of 0" : `${currentScheduleIndex + 1} of ${totalSchedules}`;
-
+    totalSchedules === 0
+      ? "0 of 0"
+      : `${currentScheduleIndex + 1} of ${totalSchedules}`;
 
   return (
     <div className="schedule-builder-container">
@@ -162,7 +157,7 @@ export default function ScheduleBuilder() {
               className="nav-arrow-btn"
               onClick={() =>
                 setCurrentScheduleIndex((idx) => Math.max(0, idx - 1))
-    }
+              }
               disabled={totalSchedules === 0 || currentScheduleIndex === 0}
             >
               ←
@@ -177,8 +172,8 @@ export default function ScheduleBuilder() {
                   totalSchedules === 0
                     ? 0
                     : Math.min(totalSchedules - 1, idx + 1)
-      )
-    }
+                )
+              }
               disabled={
                 totalSchedules === 0 ||
                 currentScheduleIndex === totalSchedules - 1
@@ -188,10 +183,12 @@ export default function ScheduleBuilder() {
             </button>
           </div>
 
-
           {/* Action Buttons */}
           <div className="schedule-actions">
-            <button onClick={handleSave} className="action-btn action-btn-primary">
+            <button
+              onClick={handleSave}
+              className="action-btn action-btn-primary"
+            >
               Save
             </button>
             <button onClick={handleReset} className="action-btn">
