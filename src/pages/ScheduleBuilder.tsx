@@ -24,17 +24,13 @@ export default function ScheduleBuilder() {
   const [possibleSchedules, setPossibleSchedules] = useState<Course[][]>([]);
   const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
 
-  // TODO: Replace with Django backend fetch
   // Search courses with debouncing
   useEffect(() => {
     const delaySearch = setTimeout(async () => {
       if (searchQuery.trim().length > 0) {
         setIsSearching(true);
         try {
-          // TODO: Replace searchCourses() with Django API call:
-          // const response = await fetch(`http://127.0.0.1:8000/api/courses/?search=${searchQuery}`);
-          // const data = await response.json();
-          // setSearchResults(data);
+          // Query the backend for results
           const results = await searchCourses(searchQuery);
           setSearchResults(results);
         } catch (error) {
