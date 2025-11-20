@@ -72,6 +72,10 @@ export default function ScheduleBuilder() {
     }
   };
 
+  const handleAddCustomCourse = () => {
+    console.log("id add a course if i knew how");
+  };
+
   const handleRemoveCourse = (courseId: number) => {
     setSelectedCourses(selectedCourses.filter((c) => c.id !== courseId));
   };
@@ -141,7 +145,12 @@ export default function ScheduleBuilder() {
               />
             )}
           </div>
-
+          <button 
+            onClick={() => handleAddCustomCourse()}
+            className="action-btn"
+          >
+            Create Custom Course
+          </button>
           {/* Selected Courses List (Glassmorphism) */}
           <SelectedCoursesList
             courses={displayedCourses}
