@@ -1,5 +1,5 @@
 export interface Course {
-  id: number; // the id associated with the course (assigned by Django)
+  id?: number; // the id associated with the course (assigned by Django)
   
   subject?: string; //
   course_number?: number; //

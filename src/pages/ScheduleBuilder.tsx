@@ -10,6 +10,7 @@ import CalendarView from "../components/CalendarView";
 import SelectedCoursesList from "../components/SelectedCoursesList";
 import CourseSearchResults from "../components/CourseSearchResults";
 import type { Course } from "../models/Course";
+import type { User } from "../models/User";
 import { searchCourses } from "../services/courseService";
 import "../styles/ScheduleBuilder.css";
 import "../styles/CustomCourseMenu.css";
@@ -28,13 +29,17 @@ export default function ScheduleBuilder() {
 
   //Custom Courses Menu
   const [isCustomMenuVisible, setIsCustomMenuVisible] = useState(false)
+  const [customLoading, setCustomLoading] = useState(false)
+  const [customError, setCustomError] = useState<string | null>(null)
   const [customData, setCustomData] = useState<Course>({
-    id: 0,
     title: '',
     start_time: '',
     end_time: '',
     days: '',
-    uploaded_by: ''
+    uploaded_by: 'muffin'
+  });
+  const [userData, setUserData] = useState<User>({
+    full_name: 'muffin'
   });
 
   // Search courses with debouncing
@@ -85,11 +90,7 @@ export default function ScheduleBuilder() {
     }
   };
 
-  const handleAddCustomCourse = () => {
-    console.log("id add a course if i knew how");
-  };
-
-  const handleRemoveCourse = (courseId: number) => {
+  const handleRemoveCourse = (courseId: number|undefined) => {
     setSelectedCourses(selectedCourses.filter((c) => c.id !== courseId));
   };
 
@@ -97,8 +98,70 @@ export default function ScheduleBuilder() {
     setIsCustomMenuVisible(!isCustomMenuVisible)
   }
 
+  //Google AI
   const handleInputChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
-    
+    const {name, value} = e.target; // sets name to the name of the element that changed, same with value
+    setCustomData(prevData => ({ //creates new variable to replace old form data
+      ...prevData, //keeps all previous form elements the same
+      [name]: value, //Changes only the variable for the form field that changed
+    }))
+  }
+  
+  //Google AI
+  const getCookie = (name: string): string | null => {
+    // Look for the cookie starting with the exact name, then extract its value.
+    const cookieMatch = document.cookie
+        .split(';')
+        .find(cookie => cookie.trim().startsWith(`${name}=`));
+    if (cookieMatch) {
+        // Extract the value after the '=' sign and decode it
+        return decodeURIComponent(cookieMatch.trim().substring(name.length + 1));
+    }
+    return null;
+  };
+
+  //Google AI
+  const handleCustomSubmit = async (e: React.FormEvent) => {
+    //Handle Submission of the Custom Course
+    e.preventDefault()
+    setCustomLoading(true)
+    setCustomError(null)
+    const API_URL = `http://127.0.0.1:8000/api/courses/`
+    setCustomData(prevData => ({ //creates new variable to replace old form data
+      ...prevData, //keeps all previous form elements the same
+      uploaded_by: 'muffin', //Changes only the variable for the form field that changed
+    }))
+    try {
+      const csrftoken = getCookie('csrftoken'); 
+      const response = await fetch(API_URL, {
+        method: 'POST', // We are creating a new resource
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken || '', 
+        },
+        body: JSON.stringify(customData), // Send the entire formData object as a JSON string
+      });
+
+      if (!response.ok) {
+        // If the server response was not successful (e.g., 404, 500, 400 Bad Request)
+        throw new Error('Failed to create course');
+      }
+
+      // If it was successful, parse the JSON response from Django
+      const newCourse = await response.json(); 
+      console.log('Course created successfully:', newCourse);
+      
+      // Close the UI menu and reset the input fields
+      setIsCustomMenuVisible(false);
+      setCustomData({title: '', days: '', start_time: '', end_time: '', uploaded_by: 'muffin'});
+
+    } catch (err) {
+      // If the network request fails or we throw an error above, this runs
+      setCustomError('An error occurred while saving.');
+    } finally {
+      // This runs whether the request succeeded or failed
+      setCustomLoading(false);
+    }
   }
 
   const handleSave = () => {
@@ -176,7 +239,9 @@ export default function ScheduleBuilder() {
             </button>
             {isCustomMenuVisible && (
               <CustomCourseMenu
-              
+                handleCustomSubmit={handleCustomSubmit}
+                onInputChange={handleInputChanges}
+                data={customData}
               />
             )}
           </div>

@@ -9,7 +9,7 @@ import type { Course } from "../models/Course";
 // Props for SelectedCoursesList component
 interface SelectedCoursesListProps {
   courses: Course[];
-  onRemoveCourse: (id: number) => void;
+  onRemoveCourse: (id: number|undefined) => void;
 }
 
 // SelectedCoursesList component
