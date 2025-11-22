@@ -12,7 +12,9 @@ import CourseSearchResults from "../components/CourseSearchResults";
 import type { Course } from "../models/Course";
 import { searchCourses } from "../services/courseService";
 import "../styles/ScheduleBuilder.css";
+import "../styles/CustomCourseMenu.css";
 import { generateSchedules } from "../utils/scheduleGenerator";
+import CustomCourseMenu from "../components/CustomCourseMenu";
 
 export default function ScheduleBuilder() {
   const [scheduleName, setScheduleName] = useState("Schedule Builder");
@@ -23,6 +25,17 @@ export default function ScheduleBuilder() {
   const [isSearching, setIsSearching] = useState(false);
   const [possibleSchedules, setPossibleSchedules] = useState<Course[][]>([]);
   const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
+
+  //Custom Courses Menu
+  const [isCustomMenuVisible, setIsCustomMenuVisible] = useState(false)
+  const [customData, setCustomData] = useState<Course>({
+    id: 0,
+    title: '',
+    start_time: '',
+    end_time: '',
+    days: '',
+    uploaded_by: ''
+  });
 
   // Search courses with debouncing
   useEffect(() => {
@@ -79,6 +92,14 @@ export default function ScheduleBuilder() {
   const handleRemoveCourse = (courseId: number) => {
     setSelectedCourses(selectedCourses.filter((c) => c.id !== courseId));
   };
+
+  const toggleCustomCourseMenu = () => {
+    setIsCustomMenuVisible(!isCustomMenuVisible)
+  }
+
+  const handleInputChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
+    
+  }
 
   const handleSave = () => {
     /*
@@ -145,12 +166,21 @@ export default function ScheduleBuilder() {
               />
             )}
           </div>
-          <button 
-            onClick={() => handleAddCustomCourse()}
-            className="action-btn"
-          >
-            Create Custom Course
-          </button>
+          {/* Button and menu for custom course creation*/}
+          <div className="custom-course-container">
+            <button 
+              onClick={() => toggleCustomCourseMenu()}
+              className="action-btn"
+            >
+              Create Custom Course
+            </button>
+            {isCustomMenuVisible && (
+              <CustomCourseMenu
+              
+              />
+            )}
+          </div>
+          
           {/* Selected Courses List (Glassmorphism) */}
           <SelectedCoursesList
             courses={displayedCourses}
