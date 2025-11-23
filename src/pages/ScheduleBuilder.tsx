@@ -11,7 +11,6 @@ import SelectedCoursesList from "../components/SelectedCoursesList";
 import CourseSearchResults from "../components/CourseSearchResults";
 import type { Course, DisplayCourse } from "../models/Course";
 import { createDisplayCourses } from "../models/Course";
-import type { User } from "../models/User";
 import { searchCourses } from "../services/courseService";
 import "../styles/ScheduleBuilder.css";
 import "../styles/CustomCourseMenu.css";
@@ -60,9 +59,6 @@ export default function ScheduleBuilder() {
     school:'',
     department:'',
     building:'',
-  });
-  const [userData, setUserData] = useState<User>({
-    full_name: 'muffin'
   });
 
   // Search courses with debouncing
