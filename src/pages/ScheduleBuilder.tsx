@@ -398,6 +398,12 @@ export default function ScheduleBuilder() {
             </button>
           </div>
 
+          {/* Conflict Warning */}
+          {hasConflicts && (
+            <div className="conflict-warning">
+              Some selected courses overlap in time.
+            </div>
+)}
           {/* Action Buttons */}
           <div className="schedule-actions">
             <button
