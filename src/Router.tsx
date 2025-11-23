@@ -25,6 +25,7 @@ export default function Router() {
       <Route element={<ProtectedRoute/>}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/builder" element={<ScheduleBuilder />} /> {/* Original course schedule builder (TEMPORARY) */}
+        <Route path="/builder/:id" element={<ScheduleBuilder />} /> {/* Edit existing schedule by id */}
       </Route>
       
                   {/* Catch-all route - redirect to login */}
