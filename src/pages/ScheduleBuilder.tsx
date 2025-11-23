@@ -199,13 +199,31 @@ export default function ScheduleBuilder() {
       const newCourse = await response.json();
       console.log("Course created successfully:", newCourse);
 
-      // Add new course to schedule (convert single Course -> DisplayCourse)
-      const displayForNew = createDisplayCourses([newCourse])[0];
-      if (displayForNew) handleAddCourse(displayForNew);
+      // Add new course to schedule
+      try {
+        // Query the backend for results
+        const results = await searchCourses(
+          newCourse.subject + " " + newCourse.course_number
+        );
+        // Convert Course[] (sections) into grouped DisplayCourse[] for UI
+        const display = createDisplayCourses(results);
+        const customDisplay = display.find(
+          (item) =>
+            item.subject == newCourse.subject &&
+            item.course_number == newCourse.course_number
+        );
+        customDisplay
+          ? handleAddCourse(customDisplay)
+          : console.log("Failed to add new course to selected courses");
+      } catch {
+        console.log("Failed to add new course to selected courses");
+      }
 
       // Close the UI menu and reset the input fields
       setIsCustomMenuVisible(false);
       setCustomData({
+        subject: "",
+        course_number: 0,
         title: "",
         days: "",
         start_time: "",

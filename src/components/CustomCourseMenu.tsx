@@ -30,6 +30,16 @@ export default function CustomCourseMenu({
             <form onSubmit={handleCustomSubmit}>
                 <h4 className="custom-course-header">Custom Course</h4>
                 <label>
+                    Subject:  
+                    <input maxLength={100} className="custom-form-input" type="text" name="subject" value={data.subject} onChange={onInputChange} required/>
+                </label>
+                <br/>
+                <label>
+                    Course Number:  
+                    <input maxLength={3} className="custom-form-input" type="text" name="course_number" value={data.course_number} onChange={onInputChange} required/>
+                </label>
+                <br/>
+                <label>
                     Title:  
                     <input maxLength={100} className="custom-form-input" type="text" name="title" value={data.title} onChange={onInputChange} required/>
                 </label>
@@ -59,16 +69,7 @@ export default function CustomCourseMenu({
                     </div>
                     {isDropdownOpen && (
                         <div>
-                            <label>
-                                Subject:  
-                                <input maxLength={100} className="custom-form-input" type="text" name="subject" value={data.subject} onChange={onInputChange}/>
-                            </label>
-                            <br/>
-                            <label>
-                                Course Number:  
-                                <input className="custom-form-input" type="text" name="course_number" value={data.course_number} onChange={onInputChange}/>
-                            </label>
-                            <br/>
+                            
                             <label>
                                 Registrar Course Number:  
                                 <input className="custom-form-input" type="text" name="registrar_course_number" value={data.registrar_course_number} onChange={onInputChange}/>
