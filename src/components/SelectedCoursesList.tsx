@@ -4,15 +4,15 @@
  * Description: Bottom panel showing list of selected courses
  */
 
-import type { Course } from "../models/Course";
+import type { DisplayCourse } from "../models/Course";
 
 // Props for SelectedCoursesList component
 interface SelectedCoursesListProps {
-  courses: Course[];
-  onRemoveCourse: (id: number) => void;
+  courses: DisplayCourse[];
+  onRemoveCourse: (course: DisplayCourse) => void;
 }
 
-// SelectedCoursesList component
+// SelectedCoursesList component - now shows one entry per course (grouped sections)
 export default function SelectedCoursesList({
   courses,
   onRemoveCourse,
@@ -25,17 +25,14 @@ export default function SelectedCoursesList({
     );
   }
 
-  // Render selected courses list
   return (
     <div className="selected-courses-list">
       <h3 className="selected-courses-title">Selected Classes</h3>
       <div className="courses-list-grid">
         {courses.map((course) => (
-          <div key={course.id} className="course-list-item">
-            
-            {/* Remove course button */}
+          <div key={`${course.subject}-${course.course_number}`} className="course-list-item">
             <button
-              onClick={() => onRemoveCourse(course.id)}
+              onClick={() => onRemoveCourse(course)}
               className="course-list-remove"
               aria-label="Remove course"
             >
@@ -46,10 +43,8 @@ export default function SelectedCoursesList({
                 {course.subject} {course.course_number}
               </span>
               <span className="course-list-title">{course.title}</span>
-              <span className="course-list-time">
-                {course.days} • {course.start_time} - {course.end_time}
-              </span>
-              <span className="course-list-instructor">{course.instructor}</span>
+              <span className="course-list-sections">{course.sections.length} sections</span>
+              <span className="course-list-instructor">{course.instructors.join(", ")}</span>
             </div>
           </div>
         ))}

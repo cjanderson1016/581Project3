@@ -33,3 +33,50 @@ export interface Course {
   department?: string;
   building?: string;
 }
+
+// DisplayCourse is a condensed view used for search results and selection.
+// It groups all sections of the same subject + course_number together.
+export interface DisplayCourse {
+  subject: string;
+  course_number: number;
+  title: string;
+  topic?: string;
+  // All unique instructors across sections for this course
+  instructors: string[];
+  // All Course sections that belong to this subject/course_number
+  sections: Course[];
+}
+
+// Convert a list of Course sections into grouped DisplayCourse entries.
+export function createDisplayCourses(courses: Course[]): DisplayCourse[] {
+  const map = new Map<string, DisplayCourse>();
+
+  for (const c of courses) {
+    const key = `${c.subject}|${c.course_number}`;
+    const existing = map.get(key);
+
+    const instructor = (c.instructor || "").trim();
+
+    if (!existing) {
+      map.set(key, {
+        subject: c.subject,
+        course_number: c.course_number,
+        title: c.title,
+        topic: c.topic,
+        instructors: instructor ? [instructor] : [],
+        sections: [c],
+      });
+    } else {
+      // add unique instructor
+      if (instructor && !existing.instructors.includes(instructor)) {
+        existing.instructors.push(instructor);
+      }
+      existing.sections.push(c);
+      // prefer existing title/topic, but fall back if missing
+      if (!existing.title && c.title) existing.title = c.title;
+      if (!existing.topic && c.topic) existing.topic = c.topic;
+    }
+  }
+
+  return Array.from(map.values());
+}

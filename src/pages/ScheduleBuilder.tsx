@@ -9,7 +9,8 @@ import ScheduleHeader from "../components/ScheduleHeader";
 import CalendarView from "../components/CalendarView";
 import SelectedCoursesList from "../components/SelectedCoursesList";
 import CourseSearchResults from "../components/CourseSearchResults";
-import type { Course } from "../models/Course";
+import type { Course, DisplayCourse } from "../models/Course";
+import { createDisplayCourses } from "../models/Course";
 import { searchCourses } from "../services/courseService";
 import "../styles/ScheduleBuilder.css";
 import { generateSchedules } from "../utils/scheduleGenerator";
@@ -19,7 +20,7 @@ export default function ScheduleBuilder() {
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<Course[]>([]);
+  const [searchResults, setSearchResults] = useState<DisplayCourse[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [possibleSchedules, setPossibleSchedules] = useState<Course[][]>([]);
   const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
@@ -32,7 +33,9 @@ export default function ScheduleBuilder() {
         try {
           // Query the backend for results
           const results = await searchCourses(searchQuery);
-          setSearchResults(results);
+          // Convert Course[] (sections) into grouped DisplayCourse[] for UI
+          const display = createDisplayCourses(results);
+          setSearchResults(display);
         } catch (error) {
           console.error("Error searching courses:", error);
           setSearchResults([]);
@@ -56,24 +59,35 @@ export default function ScheduleBuilder() {
       return;
     }
 
+    // TODO: make courses with different types (e.g. lecture, lab, discussion) be considered different courses when generating schedules so they show up together
     const schedules = generateSchedules(selectedCourses);
     setPossibleSchedules(schedules);
     setCurrentScheduleIndex(0);
   }, [selectedCourses]);
 
-  const handleAddCourse = (course: Course) => {
-    // Check if course is already added
-    const isDuplicate = selectedCourses.some((c) => c.id === course.id);
-    if (!isDuplicate) {
-      setSelectedCourses([...selectedCourses, course]);
-      // Clear search after adding
-      setSearchQuery("");
-      setSearchResults([]);
+  const handleAddCourse = (displayCourse: DisplayCourse) => {
+    // Add all sections from the selected DisplayCourse, avoiding duplicates by id
+    const existingIds = new Set(selectedCourses.map((c) => c.id));
+    const toAdd = displayCourse.sections.filter((s) => !existingIds.has(s.id));
+    if (toAdd.length > 0) {
+      setSelectedCourses([...selectedCourses, ...toAdd]);
     }
+    // Clear search after adding
+    setSearchQuery("");
+    setSearchResults([]);
   };
 
   const handleRemoveCourse = (courseId: number) => {
     setSelectedCourses(selectedCourses.filter((c) => c.id !== courseId));
+  };
+
+  // Remove all sections that belong to the given DisplayCourse (by subject + course_number)
+  const handleRemoveDisplayCourse = (displayCourse: DisplayCourse) => {
+    setSelectedCourses(
+      selectedCourses.filter(
+        (c) => !(c.subject === displayCourse.subject && c.course_number === displayCourse.course_number)
+      )
+    );
   };
 
   const handleSave = () => {
@@ -144,8 +158,8 @@ export default function ScheduleBuilder() {
 
           {/* Selected Courses List (Glassmorphism) */}
           <SelectedCoursesList
-            courses={displayedCourses}
-            onRemoveCourse={handleRemoveCourse}
+            courses={createDisplayCourses(selectedCourses)}
+            onRemoveCourse={handleRemoveDisplayCourse}
           />
         </aside>
 
