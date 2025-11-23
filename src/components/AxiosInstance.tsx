@@ -1,6 +1,6 @@
 //npm i axios 
 /*
-axios is a library that helps with requests from the backend. You need to install it before you can use it using npm
+axios is a library that helps with requests from the backend.
 
 */
 import axios from 'axios';

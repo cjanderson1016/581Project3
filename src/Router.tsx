@@ -9,6 +9,8 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ScheduleBuilder from "./pages/ScheduleBuilder";
+import PasswordReset from "./pages/PasswordReset";
+import ProtectedRoute from "./components/ProtectedRoutes";
 
 export default function Router() {
   return (
@@ -16,18 +18,14 @@ export default function Router() {
       {/* Authentication routes - standalone pages for now */}
       <Route path="/login" element={<Login />} /> {/* Login page */}
       <Route path="/signup" element={<Signup />} /> {/* Signup page */}
+      <Route path="/reset" element={<PasswordReset />} /> {/* Forgot Password*/}
 
       <Route path="/" element={<Navigate to="/login" replace />} />
 
-      {/* Dashboard - main landing page after login */}
-      <Route path="/dashboard" element={<Dashboard />} />
-
-
-      {/*
-       * TEMPORARY: /builder route to access original course schedule builder
-       * TODO: Remove this route once dashboard integration is complete
-       */}
-      <Route path="/builder" element={<ScheduleBuilder />} /> {/* Original course schedule builder (TEMPORARY) */}
+      <Route element={<ProtectedRoute/>}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/builder" element={<ScheduleBuilder />} /> {/* Original course schedule builder (TEMPORARY) */}
+      </Route>
       
                   {/* Catch-all route - redirect to login */}
       <Route path="*" element={<Navigate to="/login" replace />} />

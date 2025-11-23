@@ -36,40 +36,7 @@ export default function Signup() {
     //Successful registration. User goes to login page
     console.log("User Registered!");
     navigate("/login"); 
-    /*
-     * TODO: Implement user registration logic
-     *
-     * 1. Email Validation:
- 
-     * 3. Name Validation:
-     *    - Required field
-     *    - Minimum 2 characters
-     *    - Only letters and spaces allowed
-     *
-     * 4. Send registration request to backend:
-     *    - POST to Django endpoint: http://127.0.0.1:8000/api/auth/signup/
-     *    - Send data: { name, email, password }
-     *    - Backend should:
-     *      - Hash password using bcrypt or similar
-     *      - Create new user in database
-     *      - Send verification email (optional)
-     *      - Return authentication token
-     *
-     * 5. Handle response:
-     *    - On success:
-     *      - Store authentication token in localStorage
-     *      - Redirect to dashboard (will be implemented by dashboard team)
-     *      - Optionally show success message or email verification prompt
-     *    - On error:
-     *      - Display appropriate error messages:
-     *        - "Email already exists"
-     *        - "Invalid email domain"
-     *        - "Password does not meet requirements"
-     *        - "Network error, please try again"
-     */
-
-    // TEMPORARY: Navigate to /builder page without validation
-    // TODO: Replace with proper validation, authentication and navigate to dashboard
+  
   };
 
   return (
