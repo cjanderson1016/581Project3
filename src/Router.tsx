@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ScheduleBuilder from "./pages/ScheduleBuilder";
 import PasswordReset from "./pages/PasswordReset";
+import Settings from "./pages/Settings";
 import ProtectedRoute from "./components/ProtectedRoutes";
 
 export default function Router() {
@@ -26,6 +27,7 @@ export default function Router() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/builder" element={<ScheduleBuilder />} /> {/* Original course schedule builder (TEMPORARY) */}
         <Route path="/builder/:id" element={<ScheduleBuilder />} /> {/* Edit existing schedule by id */}
+        <Route path="/settings" element={<Settings />} /> {/* User settings page */}
       </Route>
       
                   {/* Catch-all route - redirect to login */}

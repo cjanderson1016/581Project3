@@ -67,7 +67,7 @@ export default function ScheduleHeader(
           {/* Profile menu items */}
           {showProfileMenu && (
             <div className="profile-menu">
-              <button className="profile-menu-item">Settings</button>
+              <button className="profile-menu-item" onClick={() => navigate("/settings")}>Settings</button>
               <button className="profile-menu-item" onClick={() => navigate("/dashboard")}>My Schedules</button>
               <button className="profile-menu-item" onClick={() => navigate("/login")}>Log Out</button>
             </div>
