@@ -29,4 +29,57 @@
     margin-top: 0.5rem;
     z-index: 1000;
     color: #667eea;
+    display: 'block';
+}
+
+.create-course-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.custom-course-header {
+    margin-bottom: 0.75rem;
+    margin-top:0.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.custom-form-input {
+    margin-left: 20px;
+    margin-bottom: 10px;
+    padding: 0.25rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    color: #333;
+}
+
+.advanced-dropdown-button {
+    border: none;
+    background: none;
+    padding: 0; 
+    font: inherit;
+    color: #667eea;
+    cursor: pointer; 
+    outline: none;
+}
+
+.button-container {
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+    border-top: 1px solid rgba(102, 126, 234, 0.2);
+    margin-bottom: 10px;
+}
+
+.advanced-dropdown-button:focus {
+    outline: none;
 }

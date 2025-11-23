@@ -36,7 +36,29 @@ export default function ScheduleBuilder() {
     start_time: '',
     end_time: '',
     days: '',
-    uploaded_by: 'muffin'
+    uploaded_by: 'muffin',
+    subject: '',
+    course_number: 0,
+    registrar_course_number: 0,
+    topic:'',
+    class_number: 0,
+    section_number: 0,
+    credits_min: 0,
+    credits_max: 0,
+    seats_available: 0,
+    total_enrolled: 0,
+    enroll_cap: 0,
+    type:'',
+    consent:'',
+    enrollable:'',
+    instructor:'',
+    begin_date:'',
+    end_date:'',
+    location:'',
+    room:'',
+    school:'',
+    department:'',
+    building:'',
   });
   const [userData, setUserData] = useState<User>({
     full_name: 'muffin'
@@ -107,8 +129,9 @@ export default function ScheduleBuilder() {
     }))
   }
   
-  //Google AI
+  //Google AI and Matthew
   const getCookie = (name: string): string | null => {
+    // This solves the CORS Issue that was happening when trying to post a course via the website
     // Look for the cookie starting with the exact name, then extract its value.
     const cookieMatch = document.cookie
         .split(';')
@@ -120,7 +143,7 @@ export default function ScheduleBuilder() {
     return null;
   };
 
-  //Google AI
+  //Google AI and Matthew
   const handleCustomSubmit = async (e: React.FormEvent) => {
     //Handle Submission of the Custom Course
     e.preventDefault()
@@ -151,9 +174,13 @@ export default function ScheduleBuilder() {
       const newCourse = await response.json(); 
       console.log('Course created successfully:', newCourse);
       
+      // Add new course to schedule
+      handleAddCourse(newCourse)
+
       // Close the UI menu and reset the input fields
       setIsCustomMenuVisible(false);
       setCustomData({title: '', days: '', start_time: '', end_time: '', uploaded_by: 'muffin'});
+
 
     } catch (err) {
       // If the network request fails or we throw an error above, this runs
