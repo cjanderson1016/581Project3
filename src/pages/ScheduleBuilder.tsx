@@ -361,6 +361,8 @@ export default function ScheduleBuilder() {
           <SelectedCoursesList
             courses={createDisplayCourses(selectedCourses)}
             onRemoveCourse={handleRemoveDisplayCourse}
+            conflictingIds={conflictingIds}
+
           />
         </aside>
 
