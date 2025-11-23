@@ -1,32 +1,34 @@
 export interface Course {
-  id: number; // the id associated with the course (assigned by Django)
+  id?: number; // the id associated with the course (assigned by Django)
   
-  subject: string;
-  course_number: number;
-  registrar_course_number: number;
+  subject?: string; //
+  course_number?: number; //
+  registrar_course_number?: number; //
   title: string;
   topic?: string;
-  class_number: number;
-  section_number: number;
+  class_number?: number; //
+  section_number?: number; //
 
-  credits_min: number;
-  credits_max: number;
-  seats_available: number;
-  total_enrolled: number;
-  enroll_cap: number;
+  credits_min?: number; //
+  credits_max?: number; //
+  seats_available?: number; //
+  total_enrolled?: number; //
+  enroll_cap?: number; //
 
-  type: string; // e.g. "LEC", "LAB"
-  consent: string; // e.g. "None", "Department", "Instructor"
-  enrollable: string; // could be "Yes"/"No" or converted to boolean
+  type?: string; // // e.g. "LEC", "LAB"
+  consent?: string; // // e.g. "None", "Department", "Instructor"
+  enrollable?: string; // // could be "Yes"/"No" or converted to boolean
   instructor?: string;
 
   start_time: string; // e.g. "09:00 AM" or "APPT"
-  end_time?: string; // may be blank
-  days?: string; // e.g. "MWF", "TuTh"
-  begin_date: string; // e.g. "JAN-20"
-  end_date: string; // e.g. "MAY-15"
-  location: string; // e.g. "LAWRENCE"
+  end_time: string; //- // may be blank
+  days: string; //- // e.g. "MWF", "TuTh"
+  begin_date?: string; // // e.g. "JAN-20"
+  end_date?: string; // // e.g. "MAY-15"
+  location?: string; // // e.g. "LAWRENCE"
   room?: string; // e.g. "EATN 2010"
+
+  uploaded_by:string;
 
   // === Derived or manually added fields -- TODO (maybe if time) ===
   school?: string;
@@ -37,8 +39,8 @@ export interface Course {
 // DisplayCourse is a condensed view used for search results and selection.
 // It groups all sections of the same subject + course_number together.
 export interface DisplayCourse {
-  subject: string;
-  course_number: number;
+  subject?: string;
+  course_number?: number;
   title: string;
   topic?: string;
   // All unique instructors across sections for this course
@@ -65,7 +67,7 @@ export function createDisplayCourses(courses: Course[]): DisplayCourse[] {
         topic: c.topic,
         instructors: instructor ? [instructor] : [],
         sections: [c],
-      });
+      } as DisplayCourse);
     } else {
       // add unique instructor
       if (instructor && !existing.instructors.includes(instructor)) {
@@ -80,3 +82,4 @@ export function createDisplayCourses(courses: Course[]): DisplayCourse[] {
 
   return Array.from(map.values());
 }
+// "//" means I added a ?, "//-" means I got rid of the ?
