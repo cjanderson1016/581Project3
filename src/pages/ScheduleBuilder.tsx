@@ -9,35 +9,33 @@ import ScheduleHeader from "../components/ScheduleHeader";
 import CalendarView from "../components/CalendarView";
 import SelectedCoursesList from "../components/SelectedCoursesList";
 import CourseSearchResults from "../components/CourseSearchResults";
-import type { Course } from "../models/Course";
+import type { Course, DisplayCourse } from "../models/Course";
+import { createDisplayCourses } from "../models/Course";
 import { searchCourses } from "../services/courseService";
 import "../styles/ScheduleBuilder.css";
 import { generateSchedules } from "../utils/scheduleGenerator";
-
 
 export default function ScheduleBuilder() {
   const [scheduleName, setScheduleName] = useState("Schedule Builder");
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<Course[]>([]);
+  const [searchResults, setSearchResults] = useState<DisplayCourse[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [possibleSchedules, setPossibleSchedules] = useState<Course[][]>([]);
   const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
 
-  // TODO: Replace with Django backend fetch
   // Search courses with debouncing
   useEffect(() => {
     const delaySearch = setTimeout(async () => {
       if (searchQuery.trim().length > 0) {
         setIsSearching(true);
         try {
-          // TODO: Replace searchCourses() with Django API call:
-          // const response = await fetch(`http://127.0.0.1:8000/api/courses/?search=${searchQuery}`);
-          // const data = await response.json();
-          // setSearchResults(data);
+          // Query the backend for results
           const results = await searchCourses(searchQuery);
-          setSearchResults(results);
+          // Convert Course[] (sections) into grouped DisplayCourse[] for UI
+          const display = createDisplayCourses(results);
+          setSearchResults(display);
         } catch (error) {
           console.error("Error searching courses:", error);
           setSearchResults([]);
@@ -61,25 +59,35 @@ export default function ScheduleBuilder() {
       return;
     }
 
+    // TODO: make courses with different types (e.g. lecture, lab, discussion) be considered different courses when generating schedules so they show up together
     const schedules = generateSchedules(selectedCourses);
     setPossibleSchedules(schedules);
     setCurrentScheduleIndex(0);
   }, [selectedCourses]);
 
-
-  const handleAddCourse = (course: Course) => {
-    // Check if course is already added
-    const isDuplicate = selectedCourses.some((c) => c.id === course.id);
-    if (!isDuplicate) {
-      setSelectedCourses([...selectedCourses, course]);
-      // Clear search after adding
-      setSearchQuery("");
-      setSearchResults([]);
+  const handleAddCourse = (displayCourse: DisplayCourse) => {
+    // Add all sections from the selected DisplayCourse, avoiding duplicates by id
+    const existingIds = new Set(selectedCourses.map((c) => c.id));
+    const toAdd = displayCourse.sections.filter((s) => !existingIds.has(s.id));
+    if (toAdd.length > 0) {
+      setSelectedCourses([...selectedCourses, ...toAdd]);
     }
+    // Clear search after adding
+    setSearchQuery("");
+    setSearchResults([]);
   };
 
   const handleRemoveCourse = (courseId: number) => {
-    setSelectedCourses(selectedCourses.filter(c => c.id !== courseId));
+    setSelectedCourses(selectedCourses.filter((c) => c.id !== courseId));
+  };
+
+  // Remove all sections that belong to the given DisplayCourse (by subject + course_number)
+  const handleRemoveDisplayCourse = (displayCourse: DisplayCourse) => {
+    setSelectedCourses(
+      selectedCourses.filter(
+        (c) => !(c.subject === displayCourse.subject && c.course_number === displayCourse.course_number)
+      )
+    );
   };
 
   const handleSave = () => {
@@ -108,15 +116,16 @@ export default function ScheduleBuilder() {
     alert("Export feature coming soon!");
   };
 
-    const displayedCourses =
-    possibleSchedules.length > 0
-      ? possibleSchedules[currentScheduleIndex]
-      : selectedCourses;
+  // ensures that if possibleSchedules[currentScheduleIndex] is undefined, it safely falls back to selectedCourses
+  // this guarantes displayedCourses is of type Course[]
+  const displayedCourses: Course[] =
+    possibleSchedules[currentScheduleIndex] ?? selectedCourses;
 
   const totalSchedules = possibleSchedules.length;
   const currentDisplay =
-    totalSchedules === 0 ? "0 of 0" : `${currentScheduleIndex + 1} of ${totalSchedules}`;
-
+    totalSchedules === 0
+      ? "0 of 0"
+      : `${currentScheduleIndex + 1} of ${totalSchedules}`;
 
   return (
     <div className="schedule-builder-container">
@@ -149,8 +158,8 @@ export default function ScheduleBuilder() {
 
           {/* Selected Courses List (Glassmorphism) */}
           <SelectedCoursesList
-            courses={displayedCourses}
-            onRemoveCourse={handleRemoveCourse}
+            courses={createDisplayCourses(selectedCourses)}
+            onRemoveCourse={handleRemoveDisplayCourse}
           />
         </aside>
 
@@ -162,7 +171,7 @@ export default function ScheduleBuilder() {
               className="nav-arrow-btn"
               onClick={() =>
                 setCurrentScheduleIndex((idx) => Math.max(0, idx - 1))
-    }
+              }
               disabled={totalSchedules === 0 || currentScheduleIndex === 0}
             >
               ←
@@ -177,8 +186,8 @@ export default function ScheduleBuilder() {
                   totalSchedules === 0
                     ? 0
                     : Math.min(totalSchedules - 1, idx + 1)
-      )
-    }
+                )
+              }
               disabled={
                 totalSchedules === 0 ||
                 currentScheduleIndex === totalSchedules - 1
@@ -188,10 +197,12 @@ export default function ScheduleBuilder() {
             </button>
           </div>
 
-
           {/* Action Buttons */}
           <div className="schedule-actions">
-            <button onClick={handleSave} className="action-btn action-btn-primary">
+            <button
+              onClick={handleSave}
+              className="action-btn action-btn-primary"
+            >
               Save
             </button>
             <button onClick={handleReset} className="action-btn">

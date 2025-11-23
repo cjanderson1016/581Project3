@@ -24,6 +24,7 @@ export default function Signup() {
     //Passwords the userputs in must match
     if (password !== confirmPassword){
       setError ("Need matching passwords!")
+      alert("passwords must match!")
       return;
     }
 

@@ -85,11 +85,13 @@ function coursesConflict(a: Course, b: Course): boolean {
 export function generateSchedules(selectedCourses: Course[]): Course[][] {
   if (selectedCourses.length === 0) return [];
 
-  // group by course "family" (same subject + number)
+  // group by course "family" (same subject + number + type)
+  // including `type` ensures lectures, labs, discussions are treated as separate choices
   const groupsMap = new Map<string, Course[]>();
 
   for (const c of selectedCourses) {
-    const key = `${c.subject}-${c.course_number}`;
+    const t = c.type ?? "";
+    const key = `${c.subject}-${c.course_number}-${t}`;
     const arr = groupsMap.get(key) ?? [];
     arr.push(c);
     groupsMap.set(key, arr);
