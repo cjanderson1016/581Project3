@@ -16,7 +16,12 @@ import { searchCourses } from "../services/courseService";
 import "../styles/ScheduleBuilder.css";
 import "../styles/CustomCourseMenu.css";
 import { generateSchedules } from "../utils/scheduleGenerator";
+import {
+  createSchedule,
+  buildSchedulePayload,
+} from "../services/scheduleService";
 import CustomCourseMenu from "../components/CustomCourseMenu";
+import { fetchCurrentUser, updateCurrentUser } from "../services/userService";
 
 export default function ScheduleBuilder() {
   const [scheduleName, setScheduleName] = useState("Schedule Builder");
@@ -29,19 +34,19 @@ export default function ScheduleBuilder() {
   const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
 
   //Custom Courses Menu
-  const [isCustomMenuVisible, setIsCustomMenuVisible] = useState(false)
-  const [customLoading, setCustomLoading] = useState(false)
-  const [customError, setCustomError] = useState<string | null>(null)
+  const [isCustomMenuVisible, setIsCustomMenuVisible] = useState(false);
+  const [customLoading, setCustomLoading] = useState(false);
+  const [customError, setCustomError] = useState<string | null>(null);
   const [customData, setCustomData] = useState<Course>({
-    title: '',
-    start_time: '',
-    end_time: '',
-    days: '',
-    uploaded_by: 'muffin',
-    subject: '',
+    title: "",
+    start_time: "",
+    end_time: "",
+    days: "",
+    uploaded_by: "muffin",
+    subject: "",
     course_number: 0,
     registrar_course_number: 0,
-    topic:'',
+    topic: "",
     class_number: 0,
     section_number: 0,
     credits_min: 0,
@@ -49,20 +54,20 @@ export default function ScheduleBuilder() {
     seats_available: 0,
     total_enrolled: 0,
     enroll_cap: 0,
-    type:'',
-    consent:'',
-    enrollable:'',
-    instructor:'',
-    begin_date:'',
-    end_date:'',
-    location:'',
-    room:'',
-    school:'',
-    department:'',
-    building:'',
+    type: "",
+    consent: "",
+    enrollable: "",
+    instructor: "",
+    begin_date: "",
+    end_date: "",
+    location: "",
+    room: "",
+    school: "",
+    department: "",
+    building: "",
   });
   const [userData, setUserData] = useState<User>({
-    full_name: 'muffin'
+    full_name: "muffin",
   });
 
   // Search courses with debouncing
@@ -117,7 +122,7 @@ export default function ScheduleBuilder() {
     setSearchResults([]);
   };
 
-  const handleRemoveCourse = (courseId: number|undefined) => {
+  const handleRemoveCourse = (courseId: number | undefined) => {
     setSelectedCourses(selectedCourses.filter((c) => c.id !== courseId));
   };
 
@@ -125,34 +130,39 @@ export default function ScheduleBuilder() {
   const handleRemoveDisplayCourse = (displayCourse: DisplayCourse) => {
     setSelectedCourses(
       selectedCourses.filter(
-        (c) => !(c.subject === displayCourse.subject && c.course_number === displayCourse.course_number)
+        (c) =>
+          !(
+            c.subject === displayCourse.subject &&
+            c.course_number === displayCourse.course_number
+          )
       )
     );
   };
 
   const toggleCustomCourseMenu = () => {
-    setIsCustomMenuVisible(!isCustomMenuVisible)
-  }
+    setIsCustomMenuVisible(!isCustomMenuVisible);
+  };
 
   //Google AI
   const handleInputChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {name, value} = e.target; // sets name to the name of the element that changed, same with value
-    setCustomData(prevData => ({ //creates new variable to replace old form data
+    const { name, value } = e.target; // sets name to the name of the element that changed, same with value
+    setCustomData((prevData) => ({
+      //creates new variable to replace old form data
       ...prevData, //keeps all previous form elements the same
       [name]: value, //Changes only the variable for the form field that changed
-    }))
-  }
-  
+    }));
+  };
+
   //Google AI and Matthew
   const getCookie = (name: string): string | null => {
     // This solves the CORS Issue that was happening when trying to post a course via the website
     // Look for the cookie starting with the exact name, then extract its value.
     const cookieMatch = document.cookie
-        .split(';')
-        .find(cookie => cookie.trim().startsWith(`${name}=`));
+      .split(";")
+      .find((cookie) => cookie.trim().startsWith(`${name}=`));
     if (cookieMatch) {
-        // Extract the value after the '=' sign and decode it
-        return decodeURIComponent(cookieMatch.trim().substring(name.length + 1));
+      // Extract the value after the '=' sign and decode it
+      return decodeURIComponent(cookieMatch.trim().substring(name.length + 1));
     }
     return null;
   };
@@ -160,59 +170,97 @@ export default function ScheduleBuilder() {
   //Google AI and Matthew
   const handleCustomSubmit = async (e: React.FormEvent) => {
     //Handle Submission of the Custom Course
-    e.preventDefault()
-    setCustomLoading(true)
-    setCustomError(null)
-    const API_URL = `http://127.0.0.1:8000/api/courses/`
-    setCustomData(prevData => ({ //creates new variable to replace old form data
+    e.preventDefault();
+    setCustomLoading(true);
+    setCustomError(null);
+    const API_URL = `http://127.0.0.1:8000/api/courses/`;
+    setCustomData((prevData) => ({
+      //creates new variable to replace old form data
       ...prevData, //keeps all previous form elements the same
-      uploaded_by: 'muffin', //Changes only the variable for the form field that changed
-    }))
+      uploaded_by: "muffin", //Changes only the variable for the form field that changed
+    }));
     try {
-      const csrftoken = getCookie('csrftoken'); 
+      const csrftoken = getCookie("csrftoken");
       const response = await fetch(API_URL, {
-        method: 'POST', // We are creating a new resource
+        method: "POST", // We are creating a new resource
         headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken || '', 
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken || "",
         },
         body: JSON.stringify(customData), // Send the entire formData object as a JSON string
       });
 
       if (!response.ok) {
         // If the server response was not successful (e.g., 404, 500, 400 Bad Request)
-        throw new Error('Failed to create course');
+        throw new Error("Failed to create course");
       }
 
       // If it was successful, parse the JSON response from Django
-      const newCourse = await response.json(); 
-      console.log('Course created successfully:', newCourse);
-      
-      // Add new course to schedule
-      handleAddCourse(newCourse)
+      const newCourse = await response.json();
+      console.log("Course created successfully:", newCourse);
+
+      // Add new course to schedule (convert single Course -> DisplayCourse)
+      const displayForNew = createDisplayCourses([newCourse])[0];
+      if (displayForNew) handleAddCourse(displayForNew);
 
       // Close the UI menu and reset the input fields
       setIsCustomMenuVisible(false);
-      setCustomData({title: '', days: '', start_time: '', end_time: '', uploaded_by: 'muffin'});
-
-
+      setCustomData({
+        title: "",
+        days: "",
+        start_time: "",
+        end_time: "",
+        uploaded_by: "muffin",
+      });
     } catch (err) {
       // If the network request fails or we throw an error above, this runs
-      setCustomError('An error occurred while saving.');
+      setCustomError("An error occurred while saving.");
     } finally {
       // This runs whether the request succeeded or failed
       setCustomLoading(false);
     }
-  }
+  };
 
-  const handleSave = () => {
-    /*
-     * TODO: Save schedule to backend
-     * - POST to /api/schedules/
-     * - Save course selections and schedule name
-     */
-    console.log("Saving schedule:", scheduleName, selectedCourses);
-    alert("Schedule saved! (Backend integration pending)");
+  const handleSave = async () => {
+    // Build payload: selected sections and representative displayed courses
+    try {
+      const payload = buildSchedulePayload(
+        scheduleName,
+        undefined,
+        selectedCourses,
+        displayedCourses
+      );
+      console.log("Saving schedule payload:", payload);
+      const created = await createSchedule(payload);
+      console.log("Schedule created:", created);
+
+      // If user token exists, append new schedule id to their schedule_ids
+      const token = localStorage.getItem("session_token");
+      if (token && created && typeof created.id === "number") {
+        try {
+          const user = await fetchCurrentUser(token); // get the user based on the token
+          const existing: number[] = Array.isArray(user?.schedule_ids)
+            ? user.schedule_ids
+            : [];
+          if (!existing.includes(created.id)) {
+            // if the new schedule id is not present
+            const updated = [...existing, created.id]; // append it
+            await updateCurrentUser({ schedule_ids: updated }, token); // update user
+            setUserData((prev: any) => ({
+              ...(prev || {}),
+              schedule_ids: updated,
+            }));
+          }
+        } catch (err) {
+          console.error("Failed to update user's schedule_ids:", err);
+        }
+      }
+
+      alert("Schedule saved successfully.");
+    } catch (err) {
+      console.error("Error saving schedule:", err);
+      alert("Failed to save schedule. See console for details.");
+    }
   };
 
   const handleReset = () => {
@@ -272,7 +320,7 @@ export default function ScheduleBuilder() {
           </div>
           {/* Button and menu for custom course creation*/}
           <div className="custom-course-container">
-            <button 
+            <button
               onClick={() => toggleCustomCourseMenu()}
               className="action-btn"
             >
@@ -286,7 +334,7 @@ export default function ScheduleBuilder() {
               />
             )}
           </div>
-          
+
           {/* Selected Courses List (Glassmorphism) */}
           <SelectedCoursesList
             courses={createDisplayCourses(selectedCourses)}
