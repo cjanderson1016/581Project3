@@ -1,7 +1,8 @@
 /*
  * ScheduleBuilder.tsx
  * Date: November 3, 2025
- * Description: Main schedule builder page with weekly calendar grid
+ * Description: Main course schedule builder page with search, calendar, and selected courses
+ *  Handles both new schedule creation and editing existing schedules
  */
 
 import { useState, useEffect } from "react";
@@ -29,15 +30,15 @@ import CustomCourseMenu from "../components/CustomCourseMenu";
 import { fetchCurrentUser, updateCurrentUser } from "../services/userService";
 
 export default function ScheduleBuilder() {
-  const [scheduleName, setScheduleName] = useState("Schedule Builder");
-  const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
+  const [scheduleName, setScheduleName] = useState("Schedule Builder"); // default name before loading/editing
+  const [selectedCourses, setSelectedCourses] = useState<Course[]>([]); // all selected Course sections pertaining to selected DisplayCourses (unique conbinations of subject/course_number ex. "EECS 168")
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<DisplayCourse[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [possibleSchedules, setPossibleSchedules] = useState<Course[][]>([]);
-  const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
-  const [loadedDisplayedIds, setLoadedDisplayedIds] = useState<number[] | null>(
+  const [searchQuery, setSearchQuery] = useState(""); // text in search box
+  const [searchResults, setSearchResults] = useState<DisplayCourse[]>([]); // the dropped down search results (grouped by DisplayCourse so there is only one of each subject/course_number combination -- ex. "EECS 168")
+  const [isSearching, setIsSearching] = useState(false); // whether we are currently searching (for loading spinner)
+  const [possibleSchedules, setPossibleSchedules] = useState<Course[][]>([]); // generated possible schedules (each is an array of Course sections -- one course from each subject/course_number/type group is selected, there there must be no time conflicts)
+  const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0); // index of currently displayed schedule in possibleSchedules
+  const [loadedDisplayedIds, setLoadedDisplayedIds] = useState<number[] | null>( // ids of courses that were displayed when loading an existing schedule; used to find a match in the generated schedules and show that one
     null
   );
   const params = useParams();
@@ -81,6 +82,7 @@ export default function ScheduleBuilder() {
   });
   const [userID, setUserID] = useState<number | undefined>(undefined);
 
+  // The following runs once when the component mounts
   useEffect(() => {
     // Fetch user ID on component mount
     const fetchUserIdAsync = async () => {
@@ -97,6 +99,7 @@ export default function ScheduleBuilder() {
     fetchUserIdAsync();
   }, []); // Empty dependency array ensures this runs only once on mount
 
+  // The following runs whenever searchQuery changes (when the text of the search box changes)
   // Search courses with debouncing
   useEffect(() => {
     const delaySearch = setTimeout(async () => {
@@ -123,6 +126,7 @@ export default function ScheduleBuilder() {
     return () => clearTimeout(delaySearch);
   }, [searchQuery]);
 
+  // The following runs when selectedCourses changes
   // Recompute possible schedules whenever selected courses change
   useEffect(() => {
     if (selectedCourses.length === 0) {
@@ -137,6 +141,7 @@ export default function ScheduleBuilder() {
     // TODO: if we are loading a schedule, we want to find the courses that were displayed when it was saved
   }, [selectedCourses]);
 
+  // The following runs when the component mounts and whenever editingScheduleId changes (likely only once on mount)
   // If route contains an id, load that schedule for editing
   useEffect(() => {
     const loadSchedule = async (id: number) => {
@@ -144,7 +149,7 @@ export default function ScheduleBuilder() {
         const s = await fetchSchedule(id);
         // s should include selected_courses (array of Course)
         if (s) {
-          setScheduleName(s.schedule_title || "Schedule Builder");
+          setScheduleName(s.schedule_title || "Schedule Builder"); // load the schedule name
           setSelectedCourses(
             Array.isArray(s.selected_courses) ? s.selected_courses : []
           ); // this triggers schedule generation
@@ -210,6 +215,8 @@ export default function ScheduleBuilder() {
     }
   }, [possibleSchedules, loadedDisplayedIds]);
 
+  // Add all Courses related to the given DisplayCourse to selectedCourses
+  // Called when adding a course from CourseSearchResults or when adding a custom course
   const handleAddCourse = (displayCourse: DisplayCourse) => {
     // Add all sections from the selected DisplayCourse, avoiding duplicates by id
     const existingIds = new Set(selectedCourses.map((c) => c.id));
@@ -227,6 +234,7 @@ export default function ScheduleBuilder() {
   };
 
   // Remove all sections that belong to the given DisplayCourse (by subject + course_number)
+  // Called when removing a course from SelectedCoursesList (which shows a list of grouped DisplayCourses)
   const handleRemoveDisplayCourse = (displayCourse: DisplayCourse) => {
     setSelectedCourses(
       selectedCourses.filter(
