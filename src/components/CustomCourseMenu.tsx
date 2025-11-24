@@ -10,17 +10,13 @@ import type { Course } from "../models/Course";
 import { useEffect, useState } from "react";
 import { fetchCurrentUser} from "../services/userService";
 
-function dropdown() {
-    
-}
-
-interface CustomCourseMenuProps {
+interface CustomCourseMenuProps { // properties for the CustomCourseMenu component
     handleCustomSubmit: (e: React.FormEvent) => Promise<void>;
     onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     data: Course,
 }
 
-export default function CustomCourseMenu({
+export default function CustomCourseMenu({ 
     handleCustomSubmit,
     onInputChange,
     data,
@@ -28,12 +24,11 @@ export default function CustomCourseMenu({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [isAdmin, setIsAdmin] = useState(false)
     useEffect(() => {
+        // Fetch admin status for the current user
         const fetchAdminStatus = async () => {
             const token = localStorage.getItem("session_token") 
             if (token) {
                 const user = await fetchCurrentUser(token); // get the user based on the token
-                //console.log(user)
-                //console.log(user.is_staff)
                 setIsAdmin(user.is_staff && user.is_superuser)
             }
         }
@@ -42,8 +37,10 @@ export default function CustomCourseMenu({
     //console.log(isAdmin)
     return (
         <div className="custom-course-menu">
+            {/* Form for creating a custom course */}
             <form onSubmit={handleCustomSubmit}>
-                <h4 className="custom-course-header">Custom Course</h4>
+                <h4 className="custom-course-header">Custom Course</h4> 
+                {/* Required course fields */}
                 <label>
                     Subject:  
                     <input maxLength={100} className="custom-form-input" type="text" name="subject" value={data.subject} onChange={onInputChange} required/>
@@ -74,6 +71,7 @@ export default function CustomCourseMenu({
                     <input maxLength={8} className="custom-form-input" type="time" name="end_time" value={data.end_time} onChange={onInputChange} required/>
                 </label>
                 <br/>
+                {/* Public course option for admins */}
                 {isAdmin && (
                     <label>
                         Public:
@@ -81,17 +79,18 @@ export default function CustomCourseMenu({
                     </label>
                 )}
                 <br/>
+                    {/* Advanced dropdown for additional optional fields */}
                 <div className="advanced-dropdown-container">
                     <div className="button-container">
                         <button id="advanced_dropdown_button" className="advanced-dropdown-button" type="button" onClick={() =>{
                             const button = document.getElementById("advanced_dropdown_button")
-                            button!.textContent == "Advanced >" ? button!.textContent = "Advanced v" : button!.textContent = "Advanced >" 
+                            button!.textContent == "Advanced >" ? button!.textContent = "Advanced v" : button!.textContent = "Advanced >" // Logic to change button text
                             setIsDropdownOpen(!isDropdownOpen)
                         }}>Advanced &gt;</button>
                     </div>
                     {isDropdownOpen && (
                         <div>
-                            
+                            {/* Optional advanced course fields */}
                             <label>
                                 Registrar Course Number:  
                                 <input className="custom-form-input" type="text" name="registrar_course_number" value={data.registrar_course_number} onChange={onInputChange}/>
@@ -194,6 +193,7 @@ export default function CustomCourseMenu({
                         </div>
                     )}
                 </div>
+                {/* Submit button for creating the custom course */}
                 <button className="create-course-button" type="submit">
                     Create Course
                 </button>
