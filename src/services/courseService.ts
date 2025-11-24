@@ -136,7 +136,7 @@ export async function searchCourses(query: string, user_id: number | undefined):
     }
 
     const data = await response.json() as Course[];
-    const filtered_data = data.filter(course => course.is_public || course.uploaded_by_user_id == user_id)
+    const filtered_data = data.filter(course => course.is_public || course.uploaded_by_user_id == user_id) // Filter courses to be public or uploaded by the user
     return filtered_data;
   } catch (error) {
     console.error("Error searching courses:", error);

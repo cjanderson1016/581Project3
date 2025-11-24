@@ -44,9 +44,9 @@ export default function ScheduleBuilder() {
 
   //Custom Courses Menu
   const [isCustomMenuVisible, setIsCustomMenuVisible] = useState(false);
-  const [customLoading, setCustomLoading] = useState(false);
-  const [customError, setCustomError] = useState<string | null>(null);
-  const [customData, setCustomData] = useState<Course>({
+  const [customLoading, setCustomLoading] = useState(false); // for potential loading state
+  const [customError, setCustomError] = useState<string | null>(null); // for potential error state
+  const [customData, setCustomData] = useState<Course>({ // initial empty course data
     title: "",
     start_time: "",
     end_time: "",
@@ -76,10 +76,10 @@ export default function ScheduleBuilder() {
     department: "",
     building: "",
   });
-  const [userID, setUserID] = useState<number | undefined>(undefined);
-
-  useEffect(() => {
-    // Define an internal asynchronous function
+  const [userID, setUserID] = useState<number | undefined>(undefined); 
+  
+  useEffect(() => { 
+    // Fetch user ID on component mount
     const fetchUserIdAsync = async () => {
       const token = localStorage.getItem("session_token"); 
       if (token) {
@@ -237,17 +237,18 @@ export default function ScheduleBuilder() {
   };
 
   const toggleCustomCourseMenu = () => {
+    // Toggle visibility of custom course creation menu
     setIsCustomMenuVisible(!isCustomMenuVisible);
   };
 
   //Google AI
   const handleInputChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // TypeScript now knows e.target is guaranteed to be an HTMLInputElement
-    const { name, value, type, checked } = e.target; 
+    // Handle input changes for custom course form
+    const { name, value, type, checked } = e.target;  // Destructure name, value, type, and checked from the event target
 
-    const newValue = type === 'checkbox' ? checked : value;
+    const newValue = type === 'checkbox' ? checked : value; // Determine new value based on input type
 
-    setCustomData((prevData) => ({
+    setCustomData((prevData) => ({ // update state based on previous state
       ...prevData,
       [name]: newValue,
     }));
@@ -271,18 +272,17 @@ export default function ScheduleBuilder() {
   //Google AI and Matthew
   const handleCustomSubmit = async (e: React.FormEvent) => {
     //Handle Submission of the Custom Course
-    e.preventDefault();
-    setCustomLoading(true);
-    setCustomError(null);
-    const API_URL = `http://127.0.0.1:8000/api/courses/`;
-    console.log(userID)
-    const updatedData = {
+    e.preventDefault(); // Prevent default form submission behavior
+    setCustomLoading(true); // For a potential loading screen
+    setCustomError(null); // Reset any previous errors
+    const API_URL = `http://127.0.0.1:8000/api/courses/`; // Django REST API endpoint for creating courses
+    const updatedData = { // Ensure to include user ID in the payload
       ...customData,
       uploaded_by_user_id: userID
     }
     try {
-      const csrftoken = getCookie("csrftoken");
-      const response = await fetch(API_URL, {
+      const csrftoken = getCookie("csrftoken");// Get CSRF token from cookies
+      const response = await fetch(API_URL, { // Make the POST request to create a new course
         method: "POST", // We are creating a new resource
         headers: {
           "Content-Type": "application/json",
@@ -304,12 +304,12 @@ export default function ScheduleBuilder() {
       try {
         // Query the backend for results
         const results = await searchCourses(
-          newCourse.subject + " " + newCourse.course_number,
+          newCourse.subject + " " + newCourse.course_number, 
           userID
         );
         // Convert Course[] (sections) into grouped DisplayCourse[] for UI
         const display = createDisplayCourses(results);
-        const customDisplay = display.find(
+        const customDisplay = display.find( // find the DisplayCourse that contains the newCourse
           (item) =>
             item.subject == newCourse.subject &&
             item.course_number == newCourse.course_number
