@@ -37,7 +37,9 @@ export default function ScheduleBuilder() {
   const [isSearching, setIsSearching] = useState(false);
   const [possibleSchedules, setPossibleSchedules] = useState<Course[][]>([]);
   const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
-  const [loadedDisplayedIds, setLoadedDisplayedIds] = useState<number[] | null>(null);
+  const [loadedDisplayedIds, setLoadedDisplayedIds] = useState<number[] | null>(
+    null
+  );
   const params = useParams();
   const navigate = useNavigate();
   const editingScheduleId = params.id ? Number(params.id) : undefined;
@@ -52,7 +54,7 @@ export default function ScheduleBuilder() {
     end_time: "",
     days: "",
     uploaded_by_user_id: 0,
-    is_public:false,
+    is_public: false,
     subject: "",
     course_number: 0,
     registrar_course_number: 0,
@@ -81,20 +83,19 @@ export default function ScheduleBuilder() {
   useEffect(() => {
     // Define an internal asynchronous function
     const fetchUserIdAsync = async () => {
-      const token = localStorage.getItem("session_token"); 
+      const token = localStorage.getItem("session_token");
       if (token) {
         const user = await fetchCurrentUser(token); // Waits for the user object
-        
+
         // Use the synchronous setUserID function with the resolved value
-        setUserID(user?.id); 
+        setUserID(user?.id);
       }
     };
 
     // Call the async function immediately within useEffect
     fetchUserIdAsync();
-
   }, []); // Empty dependency array ensures this runs only once on mount
-  
+
   // Search courses with debouncing
   useEffect(() => {
     const delaySearch = setTimeout(async () => {
@@ -102,7 +103,7 @@ export default function ScheduleBuilder() {
         setIsSearching(true);
         try {
           // Query the backend for results
-          const results = await searchCourses(searchQuery,userID);
+          const results = await searchCourses(searchQuery, userID);
           // Convert Course[] (sections) into grouped DisplayCourse[] for UI
           const display = createDisplayCourses(results);
           setSearchResults(display);
@@ -133,7 +134,6 @@ export default function ScheduleBuilder() {
     setPossibleSchedules(schedules);
     setCurrentScheduleIndex(0);
     // TODO: if we are loading a schedule, we want to find the courses that were displayed when it was saved
-    
   }, [selectedCourses]);
 
   // If route contains an id, load that schedule for editing
@@ -151,7 +151,9 @@ export default function ScheduleBuilder() {
           if (Array.isArray(s.displayed_courses)) {
             const ids = s.displayed_courses
               .map((c: Course) => (typeof c.id === "number" ? c.id : undefined))
-              .filter((id: number | undefined): id is number => id !== undefined);
+              .filter(
+                (id: number | undefined): id is number => id !== undefined
+              );
             setLoadedDisplayedIds(ids.length > 0 ? ids : null);
           }
         }
@@ -243,16 +245,15 @@ export default function ScheduleBuilder() {
   //Google AI
   const handleInputChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
     // TypeScript now knows e.target is guaranteed to be an HTMLInputElement
-    const { name, value, type, checked } = e.target; 
+    const { name, value, type, checked } = e.target;
 
-    const newValue = type === 'checkbox' ? checked : value;
+    const newValue = type === "checkbox" ? checked : value;
 
     setCustomData((prevData) => ({
       ...prevData,
       [name]: newValue,
     }));
   };
-
 
   //Google AI and Matthew
   const getCookie = (name: string): string | null => {
@@ -275,11 +276,11 @@ export default function ScheduleBuilder() {
     setCustomLoading(true);
     setCustomError(null);
     const API_URL = `http://127.0.0.1:8000/api/courses/`;
-    console.log(userID)
+    console.log(userID);
     const updatedData = {
       ...customData,
-      uploaded_by_user_id: userID
-    }
+      uploaded_by_user_id: userID,
+    };
     try {
       const csrftoken = getCookie("csrftoken");
       const response = await fetch(API_URL, {
@@ -329,7 +330,7 @@ export default function ScheduleBuilder() {
         end_time: "",
         days: "",
         uploaded_by_user_id: 0,
-        is_public:false,
+        is_public: false,
         subject: "",
         course_number: 0,
         registrar_course_number: 0,
@@ -362,8 +363,12 @@ export default function ScheduleBuilder() {
     }
   };
 
+  // This runs when the user clicks "Save" to create or update a schedule
+  // This handles both new schedule creation and editing existing schedules
   const handleSave = async () => {
     // Build payload: selected sections and representative displayed courses
+    // Selected courses are all instances of the selected Courses (ex. all sections of EECS 168)
+    // Displayed courses are the instances of each course shown in the calendar (the specific sections chosen -- ex. the specific LEC and LAB of EECS 168)
     try {
       const payload = buildSchedulePayload(
         scheduleName,
@@ -371,42 +376,47 @@ export default function ScheduleBuilder() {
         selectedCourses,
         displayedCourses
       );
-      console.log("Saving schedule payload:", payload);
+      console.log("Saving schedule payload:", payload); // start log
+      // Determine if creating new or updating existing
       if (editingScheduleId) {
         // updating existing schedule
         const updated = await updateSchedule(editingScheduleId, payload);
         console.log("Schedule updated:", updated);
         alert("Schedule updated successfully.");
       } else {
+        // creating new schedule
         const created = await createSchedule(payload);
         console.log("Schedule created:", created);
 
-        // If user token exists, append new schedule id to their schedule_ids
+        // If user token exists, append the new schedule id to the user's schedule_ids (backend user profile)
         const token = localStorage.getItem("session_token");
         if (token && created && typeof created.id === "number") {
           try {
             const user = await fetchCurrentUser(token); // get the user based on the token
-            const existing: number[] = Array.isArray(user?.schedule_ids)
+            const existing: number[] = Array.isArray(user?.schedule_ids) // get existing schedule_ids
               ? user.schedule_ids
               : [];
             if (!existing.includes(created.id)) {
-              // if the new schedule id is not present
+              // if the new schedule id is not present (it shouldn't be), append it
               const updated = [...existing, created.id]; // append it
-              await updateCurrentUser({ schedule_ids: updated }, token); // update user
+              await updateCurrentUser({ schedule_ids: updated }, token); // update the user
             }
           } catch (err) {
+            // log any errors adding schedule id to user profile
             console.error("Failed to update user's schedule_ids:", err);
           }
         }
 
-        alert("Schedule saved successfully.");
+        alert("Schedule saved successfully."); // success alert
       }
     } catch (err) {
+      // log any errors saving schedule
       console.error("Error saving schedule:", err);
       alert("Failed to save schedule. See console for details.");
     }
   };
 
+  // Reset selected courses (ask for confirmation)
   const handleReset = () => {
     if (confirm("Are you sure you want to clear this schedule?")) {
       setSelectedCourses([]);
@@ -415,9 +425,7 @@ export default function ScheduleBuilder() {
 
   const handleExport = () => {
     /*
-     * TODO: Export schedule as PDF or image
-     * - Generate PDF with schedule grid
-     * - Download file
+     * Future work: Export schedule as PDF, image, or calendar app file
      */
     console.log("Exporting schedule");
     alert("Export feature coming soon!");
@@ -433,10 +441,9 @@ export default function ScheduleBuilder() {
     totalSchedules === 0
       ? "0 of 0"
       : `${currentScheduleIndex + 1} of ${totalSchedules}`;
-    // Finds which selected courses are in time conflict
+  // Finds which selected courses are in time conflict
   const conflictingIds = findConflictingCourseIds(displayedCourses);
   const hasConflicts = conflictingIds.length > 0;
-
 
   return (
     <div className="schedule-builder-container">
@@ -488,7 +495,6 @@ export default function ScheduleBuilder() {
             courses={createDisplayCourses(selectedCourses)}
             onRemoveCourse={handleRemoveDisplayCourse}
             conflictingIds={conflictingIds}
-
           />
         </aside>
 
@@ -531,7 +537,7 @@ export default function ScheduleBuilder() {
             <div className="conflict-warning">
               Some selected courses overlap in time.
             </div>
-)}
+          )}
           {/* Action Buttons */}
           <div className="schedule-actions">
             <button
