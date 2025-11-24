@@ -32,26 +32,45 @@ export default function SelectedCoursesList({
     <div className="selected-courses-list">
       <h3 className="selected-courses-title">Selected Classes</h3>
       <div className="courses-list-grid">
-        {courses.map((course) => (
-          <div key={`${course.subject}-${course.course_number}`} className="course-list-item">
-            <button
-              onClick={() => onRemoveCourse(course)}
-              className="course-list-remove"
-              aria-label="Remove course"
-            >
-              ×
-            </button>
-            <div className="course-list-info">
-              <span className="course-list-code">
-                {course.subject} {course.course_number}
-              </span>
-              <span className="course-list-title">{course.title}</span>
-              <span className="course-list-sections">{course.sections.length} sections</span>
-              <span className="course-list-instructor">{course.instructors.join(", ")}</span>
-            </div>
-          </div>
-        ))}
+        {courses.map((course) => {
+  const isConflict = course.sections.some((section) =>
+    conflictingIds.includes(section.id)
+  );
+
+  return (
+    <div
+      key={`${course.subject}-${course.course_number}`}
+      className={`course-list-item ${isConflict ? "course-conflict" : ""}`}
+    >
+      <button
+        onClick={() => onRemoveCourse(course)}
+        className="course-list-remove"
+        aria-label="Remove course"
+      >
+        ×
+      </button>
+
+      <div className="course-list-info">
+        <span className="course-list-code">
+          {course.subject} {course.course_number}
+        </span>
+
+        {/* conflict */}
+        {isConflict && (
+          <span className="course-conflict-badge">
+            Conflict
+          </span>
+        )}
+
+        <span className="course-list-title">{course.title}</span>
+        <span className="course-list-sections">
+          {course.sections.length} sections
+        </span>
+        <span className="course-list-instructor">
+          {course.instructors.join(", ")}
+        </span>
       </div>
     </div>
   );
-}
+})}
+
