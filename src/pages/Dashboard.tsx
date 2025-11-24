@@ -4,66 +4,67 @@
  * Description: Main dashboard page showing saved schedules and create new option
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NewScheduleCard from "../components/NewScheduleCard";
 import ScheduleCard from "../components/ScheduleCard";
 import "../styles/Dashboard.css";
-import { useEffect} from 'react';
-import AxiosInstance from "../components/AxiosInstance";
 import { useNavigate } from "react-router-dom";
+import { fetchCurrentUser } from "../services/userService";
+import { fetchSchedule } from "../services/scheduleService";
+
 interface SavedSchedule {
   id: number;
   title: string;
   lastEdited: string;
 }
 
- 
 export default function Dashboard() {
   const [name, setName] = useState("");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
   const [isSignedIn, setIsSignedIn] = useState(true); // Toggle for demo purposes
-  const [savedSchedules] = useState<SavedSchedule[]>([
-    // TODO: Fetch from backend API and sort by most recent
-    // Example saved schedules for demonstration - ordered by most recent first
-    {
-      id: 1,
-      title: "Fall 2024 Schedule",
-      lastEdited: "2 days ago",
-    },
-    {
-      id: 2,
-      title: "Spring 2025 Schedule",
-      lastEdited: "1 week ago",
-    },
-    {
-      id: 3,
-      title: "Summer 2024 Schedule",
-      lastEdited: "2 months ago",
-    },
-  ]);
+  const [savedSchedules, setSavedSchedules] = useState<SavedSchedule[]>([]);
   const [user, setUser] = useState<any>(null);
 
-
   useEffect(() => {
-  const token = localStorage.getItem("session_token");
+    const loadUserAndSchedules = async () => {
+      const token = localStorage.getItem("session_token");
+      try {
+        const u = await fetchCurrentUser(token || undefined);
+        setUser(u);
 
-  AxiosInstance.get("/api/user/", {
-      headers: {
-        Authorization: `Token ${token}`, //Needs this exact format for some reason
-      },
-    }).then((res) => {
-        setUser(res.data);
-      })
-      .catch((err) => {
+        const ids: number[] = Array.isArray(u?.schedule_ids)
+          ? u.schedule_ids
+          : [];
+        if (ids.length > 0) {
+          const schedules = await Promise.all(
+            ids.map(async (id) => {
+              try {
+                const s = await fetchSchedule(id);
+                return {
+                  id: s.id,
+                  title: s.schedule_title,
+                  lastEdited: s.last_updated_date,
+                } as SavedSchedule;
+              } catch (err) {
+                console.error(`Failed to fetch schedule ${id}:`, err);
+                return null;
+              }
+            })
+          );
+
+          setSavedSchedules(schedules.filter((s): s is SavedSchedule => !!s));
+        }
+      } catch (err) {
         console.error("Unable to find user:", err);
-      });
+      }
+    };
+
+    loadUserAndSchedules();
   }, []);
 
-
-
   const handleProfileClick = () => {
-    setShowProfileMenu(!showProfileMenu)
+    setShowProfileMenu(!showProfileMenu);
     console.log("Profile clicked");
   };
 
@@ -80,7 +81,8 @@ export default function Dashboard() {
         </div>
         <div className="header-right">
           <div className="display-user-fullname">
-          <p>Welcome, {user?.full_name}</p></div>
+            <p>Welcome, {user?.full_name}</p>
+          </div>
           <div className="profile-dropdown">
             <div className="profile-icon" onClick={handleProfileClick}>
               <svg
@@ -97,12 +99,17 @@ export default function Dashboard() {
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
             </div>
-                  {showProfileMenu && (
-            <div className="profile-menu">
-              <button className="profile-menu-item">Settings</button>
-              <button className="profile-menu-item" onClick={() => navigate("/login")}>Log Out</button>
-            </div>
-          )}
+            {showProfileMenu && (
+              <div className="profile-menu">
+                <button className="profile-menu-item" onClick={() => navigate("/settings")}>Settings</button>
+                <button
+                  className="profile-menu-item"
+                  onClick={() => navigate("/login")}
+                >
+                  Log Out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>

@@ -5,6 +5,7 @@
  */
 
 import "../styles/Dashboard.css";
+import { useNavigate } from "react-router-dom";
 
 interface ScheduleCardProps {
   title?: string;
@@ -19,15 +20,12 @@ export default function ScheduleCard({
   isEmpty = false,
   scheduleId,
 }: ScheduleCardProps) {
+  const navigate = useNavigate();
+
   const handleClick = () => {
-    if (!isEmpty) {
-      /*
-       * TODO: Open saved schedule
-       * - Route to /schedule/:id
-       * - Load schedule data from backend
-       * - Will be implemented when routing and API are integrated
-       */
-      console.log(`Open schedule ${scheduleId}: ${title}`);
+    if (!isEmpty && scheduleId) {
+      // Navigate to the schedule editor page for this schedule
+      navigate(`/builder/${scheduleId}`);
     }
   };
 
