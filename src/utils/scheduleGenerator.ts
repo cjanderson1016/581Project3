@@ -128,4 +128,21 @@ export function generateSchedules(selectedCourses: Course[]): Course[][] {
 
   return result;
 }
+// UI warnings for conflicting courses
+export function findConflictingCourseIds(courses: Course[]): number[] {
+  const conflicts = new Set<number>();
+
+  for (let i = 0; i < courses.length; i++) {
+    for (let j = i + 1; j < courses.length; j++) {
+      if (coursesConflict(courses[i]!, courses[j]!)) {
+        const aId = courses[i]?.id;
+        const bId = courses[j]?.id;
+        if (aId != null) conflicts.add(aId);
+        if (bId != null) conflicts.add(bId);
+      }
+    }
+  }
+
+  return Array.from(conflicts);
+}
 
