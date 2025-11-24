@@ -101,7 +101,7 @@ export default function Dashboard() {
             </div>
             {showProfileMenu && (
               <div className="profile-menu">
-                <button className="profile-menu-item">Settings</button>
+                <button className="profile-menu-item" onClick={() => navigate("/settings")}>Settings</button>
                 <button
                   className="profile-menu-item"
                   onClick={() => navigate("/login")}

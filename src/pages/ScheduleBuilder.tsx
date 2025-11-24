@@ -14,7 +14,11 @@ import { createDisplayCourses } from "../models/Course";
 import { searchCourses } from "../services/courseService";
 import "../styles/ScheduleBuilder.css";
 import "../styles/CustomCourseMenu.css";
-import { generateSchedules } from "../utils/scheduleGenerator";
+import {
+  generateSchedules,
+  findConflictingCourseIds,
+} from "../utils/scheduleGenerator";
+
 import {
   createSchedule,
   buildSchedulePayload,
@@ -384,6 +388,10 @@ export default function ScheduleBuilder() {
     totalSchedules === 0
       ? "0 of 0"
       : `${currentScheduleIndex + 1} of ${totalSchedules}`;
+    // Finds which selected courses are in time conflict
+  const conflictingIds = findConflictingCourseIds(selectedCourses);
+  const hasConflicts = conflictingIds.length > 0;
+
 
   return (
     <div className="schedule-builder-container">
@@ -434,6 +442,8 @@ export default function ScheduleBuilder() {
           <SelectedCoursesList
             courses={createDisplayCourses(selectedCourses)}
             onRemoveCourse={handleRemoveDisplayCourse}
+            conflictingIds={conflictingIds}
+
           />
         </aside>
 
@@ -471,6 +481,12 @@ export default function ScheduleBuilder() {
             </button>
           </div>
 
+          {/* Conflict Warning */}
+          {hasConflicts && (
+            <div className="conflict-warning">
+              Some selected courses overlap in time.
+            </div>
+)}
           {/* Action Buttons */}
           <div className="schedule-actions">
             <button
