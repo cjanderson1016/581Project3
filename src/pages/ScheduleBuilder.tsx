@@ -389,7 +389,7 @@ export default function ScheduleBuilder() {
       ? "0 of 0"
       : `${currentScheduleIndex + 1} of ${totalSchedules}`;
     // Finds which selected courses are in time conflict
-  const conflictingIds = findConflictingCourseIds(selectedCourses);
+  const conflictingIds = findConflictingCourseIds(displayedCourses);
   const hasConflicts = conflictingIds.length > 0;
 
 
