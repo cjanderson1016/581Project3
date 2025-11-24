@@ -41,7 +41,8 @@ export default function ScheduleBuilder() {
     start_time: "",
     end_time: "",
     days: "",
-    uploaded_by: "muffin",
+    uploaded_by_user_id: 0,
+    is_public:false,
     subject: "",
     course_number: 0,
     registrar_course_number: 0,
@@ -65,7 +66,25 @@ export default function ScheduleBuilder() {
     department: "",
     building: "",
   });
+  const [userID, setUserID] = useState<number | undefined>(undefined);
 
+  useEffect(() => {
+    // Define an internal asynchronous function
+    const fetchUserIdAsync = async () => {
+      const token = localStorage.getItem("session_token"); 
+      if (token) {
+        const user = await fetchCurrentUser(token); // Waits for the user object
+        
+        // Use the synchronous setUserID function with the resolved value
+        setUserID(user?.id); 
+      }
+    };
+
+    // Call the async function immediately within useEffect
+    fetchUserIdAsync();
+
+  }, []); // Empty dependency array ensures this runs only once on mount
+  
   // Search courses with debouncing
   useEffect(() => {
     const delaySearch = setTimeout(async () => {
@@ -73,7 +92,7 @@ export default function ScheduleBuilder() {
         setIsSearching(true);
         try {
           // Query the backend for results
-          const results = await searchCourses(searchQuery);
+          const results = await searchCourses(searchQuery,userID);
           // Convert Course[] (sections) into grouped DisplayCourse[] for UI
           const display = createDisplayCourses(results);
           setSearchResults(display);
@@ -141,13 +160,17 @@ export default function ScheduleBuilder() {
 
   //Google AI
   const handleInputChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target; // sets name to the name of the element that changed, same with value
+    // TypeScript now knows e.target is guaranteed to be an HTMLInputElement
+    const { name, value, type, checked } = e.target; 
+
+    const newValue = type === 'checkbox' ? checked : value;
+
     setCustomData((prevData) => ({
-      //creates new variable to replace old form data
-      ...prevData, //keeps all previous form elements the same
-      [name]: value, //Changes only the variable for the form field that changed
+      ...prevData,
+      [name]: newValue,
     }));
   };
+
 
   //Google AI and Matthew
   const getCookie = (name: string): string | null => {
@@ -170,11 +193,11 @@ export default function ScheduleBuilder() {
     setCustomLoading(true);
     setCustomError(null);
     const API_URL = `http://127.0.0.1:8000/api/courses/`;
-    setCustomData((prevData) => ({
-      //creates new variable to replace old form data
-      ...prevData, //keeps all previous form elements the same
-      uploaded_by: "muffin", //Changes only the variable for the form field that changed
-    }));
+    console.log(userID)
+    const updatedData = {
+      ...customData,
+      uploaded_by_user_id: userID
+    }
     try {
       const csrftoken = getCookie("csrftoken");
       const response = await fetch(API_URL, {
@@ -183,7 +206,7 @@ export default function ScheduleBuilder() {
           "Content-Type": "application/json",
           "X-CSRFToken": csrftoken || "",
         },
-        body: JSON.stringify(customData), // Send the entire formData object as a JSON string
+        body: JSON.stringify(updatedData), // Send the entire formData object as a JSON string
       });
 
       if (!response.ok) {
@@ -199,7 +222,8 @@ export default function ScheduleBuilder() {
       try {
         // Query the backend for results
         const results = await searchCourses(
-          newCourse.subject + " " + newCourse.course_number
+          newCourse.subject + " " + newCourse.course_number,
+          userID
         );
         // Convert Course[] (sections) into grouped DisplayCourse[] for UI
         const display = createDisplayCourses(results);
@@ -218,13 +242,34 @@ export default function ScheduleBuilder() {
       // Close the UI menu and reset the input fields
       setIsCustomMenuVisible(false);
       setCustomData({
-        subject: "",
-        course_number: 0,
         title: "",
-        days: "",
         start_time: "",
         end_time: "",
-        uploaded_by: "muffin",
+        days: "",
+        uploaded_by_user_id: 0,
+        is_public:false,
+        subject: "",
+        course_number: 0,
+        registrar_course_number: 0,
+        topic: "",
+        class_number: 0,
+        section_number: 0,
+        credits_min: 0,
+        credits_max: 0,
+        seats_available: 0,
+        total_enrolled: 0,
+        enroll_cap: 0,
+        type: "",
+        consent: "",
+        enrollable: "",
+        instructor: "",
+        begin_date: "",
+        end_date: "",
+        location: "",
+        room: "",
+        school: "",
+        department: "",
+        building: "",
       });
     } catch (err) {
       // If the network request fails or we throw an error above, this runs
@@ -260,10 +305,10 @@ export default function ScheduleBuilder() {
             // if the new schedule id is not present
             const updated = [...existing, created.id]; // append it
             await updateCurrentUser({ schedule_ids: updated }, token); // update user
-            setUserData((prev: any) => ({
+            /*setUserData((prev: any) => ({
               ...(prev || {}),
               schedule_ids: updated,
-            }));
+            }));*/
           }
         } catch (err) {
           console.error("Failed to update user's schedule_ids:", err);

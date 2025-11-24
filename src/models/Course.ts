@@ -28,7 +28,8 @@ export interface Course {
   location?: string; // // e.g. "LAWRENCE"
   room?: string; // e.g. "EATN 2010"
 
-  uploaded_by:string;
+  uploaded_by_user_id:number;
+  is_public:boolean;
 
   // === Derived or manually added fields -- TODO (maybe if time) ===
   school?: string;

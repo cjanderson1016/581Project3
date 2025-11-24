@@ -7,7 +7,8 @@
 import type React from "react";
 import "../styles/CustomCourseMenu.css";
 import type { Course } from "../models/Course";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchCurrentUser} from "../services/userService";
 
 function dropdown() {
     
@@ -25,6 +26,20 @@ export default function CustomCourseMenu({
     data,
 }: CustomCourseMenuProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const [isAdmin, setIsAdmin] = useState(false)
+    useEffect(() => {
+        const fetchAdminStatus = async () => {
+            const token = localStorage.getItem("session_token") 
+            if (token) {
+                const user = await fetchCurrentUser(token); // get the user based on the token
+                //console.log(user)
+                //console.log(user.is_staff)
+                setIsAdmin(user.is_staff && user.is_superuser)
+            }
+        }
+        fetchAdminStatus()
+    }, [])
+    //console.log(isAdmin)
     return (
         <div className="custom-course-menu">
             <form onSubmit={handleCustomSubmit}>
@@ -58,6 +73,13 @@ export default function CustomCourseMenu({
                     End Time:  
                     <input maxLength={8} className="custom-form-input" type="time" name="end_time" value={data.end_time} onChange={onInputChange} required/>
                 </label>
+                <br/>
+                {isAdmin && (
+                    <label>
+                        Public:
+                        <input className="custom-form-input" type="checkbox" name="is_public" checked={data.is_public} onChange={onInputChange}></input>
+                    </label>
+                )}
                 <br/>
                 <div className="advanced-dropdown-container">
                     <div className="button-container">

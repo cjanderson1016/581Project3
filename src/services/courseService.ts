@@ -117,7 +117,8 @@ import type { Course } from "../models/Course";
  * @param query - Search query (matches subject, course number, or title)
  * @returns Promise with array of matching courses
  */
-export async function searchCourses(query: string): Promise<Course[]> {
+export async function searchCourses(query: string, user_id: number | undefined): Promise<Course[]> {
+  user_id == undefined ? user_id = 0 : user_id = user_id
   if (!query || query.trim().length === 0) {
     return [];
   }
@@ -134,8 +135,9 @@ export async function searchCourses(query: string): Promise<Course[]> {
       return [];
     }
 
-    const data = await response.json();
-    return data as Course[];
+    const data = await response.json() as Course[];
+    const filtered_data = data.filter(course => course.is_public || course.uploaded_by_user_id == user_id)
+    return filtered_data;
   } catch (error) {
     console.error("Error searching courses:", error);
     return [];
