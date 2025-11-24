@@ -8,47 +8,45 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthIllustration from "../components/AuthIllustration";
 import "../styles/Auth.css";
+import AxiosInstance from "../components/AxiosInstance";
+import React, { useEffect } from 'react';
 
+import Alert from "../components/Alerts"
+import "../styles/Alerts.css"
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [showAlert, setShowAlert ] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+  localStorage.removeItem("session_token")
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    /*
-     * TODO: Implement authentication logic
-     *
-     * 1. Email Validation:
-     *    - Check if email matches required domain (e.g., must be @university.edu)
-     *    - Validate email format using regex
-     *
-     * 2. Send login request to backend:
-     *    - POST to Django endpoint: http://127.0.0.1:8000/api/auth/login/
-     *    - Send credentials: { email, password }
-     *    - Backend should verify credentials against database
-     *
-     * 3. Handle response:
-     *    - On success: Store authentication token (JWT) in localStorage or cookies
-     *    - Redirect to dashboard (will be implemented by dashboard team)
-     *    - Set user session/context
-     *
-     * 4. Error handling:
-     *    - Display error message for invalid credentials
-     *    - Handle network errors
-     *    - Show specific messages (e.g., "Invalid email or password", "Account not found")
-     *
-     * 5. Security considerations:
-     *    - Implement rate limiting for login attempts
-     *    - Add CAPTCHA after multiple failed attempts
-     *    - Use HTTPS in production
-     */
+    // Authenticate the user's login request. Uses AxiosInstance.tsx in the components folder
+    try{
+  
+    const authenticate = await AxiosInstance.post("/api/login/",{
+    email,
+    password
+    });
+    //Successful login, should prob implement some errors at some point 
+    console.log("Login attempt with:", { email, password }); 
+    const token = authenticate.data.token;
+    localStorage.setItem("session_token", token);
+    console.log("token:", token)
 
-    // TEMPORARY: Navigate to /builder page without validation
-    // TODO: Replace with proper authentication and navigate to dashboard
-    console.log("Login attempt with:", { email, password }); // Log credentials for debugging
-    navigate("/dashboard"); // Bypass validation and go to builder (TEMPORARY)
+    navigate("/dashboard");  // Go to dashboard
+
+    } catch (error){
+
+      alert("Invalid Email or Password!\nPlease try again...")
+      
+    }
+
   };
 
   return (
@@ -73,7 +71,6 @@ export default function Login() {
                 placeholder="student@university.edu"
                 className="form-input"
               />
-              {/* TODO: Add email domain validation hint */}
             </div>
 
             <div className="form-group">
@@ -94,9 +91,12 @@ export default function Login() {
              * - Implement password reset flow via email
              */}
             <div className="form-footer">
-              <a href="#" className="forgot-password">
-                Forgot password?
-              </a>
+                <p>
+                  {" "}
+                  <Link to="/reset">
+                    Forgot Password?
+                  </Link>
+                </p>
             </div>
 
             <button type="submit" className="auth-button">

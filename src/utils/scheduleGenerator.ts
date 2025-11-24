@@ -1,5 +1,8 @@
-// scheduleGenerator.ts
-// Creates all schedules that aren't conflicting from the selected courses
+/*
+ * scheduleGenerator.ts
+ * Date: November 23, 2025
+ * Description: Utility functions to generate valid course schedules without conflicts
+ */
 
 import type { Course } from "../models/Course";
 
@@ -16,31 +19,34 @@ const dayMap: Record<string, number> = {
   Sa: 6,
 };
 
+// Parse the days string (a subset of "SuMTuWThFSa") into array of day indices
 function parseDays(days: string): number[] {
   if (!days) return [];
 
-  const dayNumbers: number[] = [];
-  let i = 0;
+  const result: number[] = [];
 
-  while (i < days.length) {
-    if (i + 1 < days.length) {
-      const twoChar = days.substring(i, i + 2);
-      if (dayMap[twoChar] !== undefined) {
-        dayNumbers.push(dayMap[twoChar]!);
-        i += 2;
-        continue;
-      }
+  for (let i = 0; i < days.length; i++) {
+    const two = days.slice(i, i + 2);
+    const one = days[i];
+
+    // Two letter codes first (Tu, Th, Su, Sa)
+    if (dayMap[two] !== undefined) {
+      result.push(dayMap[two]!);
+      i++; // skip next char because we consumed two
+      continue;
     }
-    const oneChar = days[i];
-    if (oneChar && dayMap[oneChar] !== undefined) {
-      dayNumbers.push(dayMap[oneChar]!);
+
+    // Single letter codes (M, W, F, etc.)
+    if (dayMap[one] !== undefined) {
+      result.push(dayMap[one]!);
     }
-    i++;
   }
 
-  return [...new Set(dayNumbers)].sort();
+  // Remove duplicates and sort for consistency
+  return [...new Set(result)].sort();
 }
 
+// Convert time string (e.g., "2:30 PM") to 24-hour format "HH:MM"
 function convertTo24Hour(time: string): string {
   if (!time) return "00:00";
 
@@ -59,16 +65,18 @@ function convertTo24Hour(time: string): string {
   return `${hours.toString().padStart(2, "0")}:${minutes}`;
 }
 
+// Convert time string to total minutes since midnight
 function timeToMinutes(time: string): number {
   const [h, m] = convertTo24Hour(time).split(":").map(Number);
   return h * 60 + m;
 }
 
+// Check if two courses conflict in time
 function coursesConflict(a: Course, b: Course): boolean {
   const daysA = parseDays(a.days);
   const daysB = parseDays(b.days);
 
-  // any shared day?
+  // any shared day
   const sharedDay = daysA.some((d) => daysB.includes(d));
   if (!sharedDay) return false;
 
@@ -81,22 +89,23 @@ function coursesConflict(a: Course, b: Course): boolean {
   return aStart < bEnd && bStart < aEnd;
 }
 
-
+// Generate all possible non-conflicting schedules from selected courses
 export function generateSchedules(selectedCourses: Course[]): Course[][] {
   if (selectedCourses.length === 0) return [];
 
-  // group by course "family" (same subject + number)
+  // group by course "family" (same subject + number + type)
+  // including `type` ensures lectures, labs, discussions are treated as separate choices
   const groupsMap = new Map<string, Course[]>();
 
   for (const c of selectedCourses) {
-    const key = `${c.subject}-${c.course_number}`;
+    const t = c.type ?? "";
+    const key = `${c.subject}-${c.course_number}-${t}`;
     const arr = groupsMap.get(key) ?? [];
     arr.push(c);
     groupsMap.set(key, arr);
   }
 
   const groups = Array.from(groupsMap.values());
-
   const result: Course[][] = [];
 
   function backtrack(groupIndex: number, current: Course[]) {
@@ -119,7 +128,7 @@ export function generateSchedules(selectedCourses: Course[]): Course[][] {
 
   backtrack(0, []);
 
-  // if  nothing valid fall back to everything you picked
+  // if nothing valid, fall back to everything you picked
   if (result.length === 0) {
     result.push([...selectedCourses]);
   }
@@ -127,3 +136,20 @@ export function generateSchedules(selectedCourses: Course[]): Course[][] {
   return result;
 }
 
+// UI warnings for conflicting courses
+export function findConflictingCourseIds(courses: Course[]): number[] {
+  const conflicts = new Set<number>();
+
+  for (let i = 0; i < courses.length; i++) {
+    for (let j = i + 1; j < courses.length; j++) {
+      if (coursesConflict(courses[i]!, courses[j]!)) {
+        const aId = courses[i]?.id;
+        const bId = courses[j]?.id;
+        if (aId != null) conflicts.add(aId);
+        if (bId != null) conflicts.add(bId);
+      }
+    }
+  }
+
+  return Array.from(conflicts);
+}

@@ -10,7 +10,7 @@ import AuthIllustration from "../components/AuthIllustration";
 import "../styles/Auth.css";
 import AxiosInstance from "../components/AxiosInstance";
 
-export default function Signup() {
+export default function PasswordReset() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,23 +21,25 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    //Passwords the userputs in must match
-    if (password !== confirmPassword){
-      setError ("Need matching passwords!")
-      alert("passwords must match!")
-      return;
+    if (password !== confirmPassword) {
+        setError("Need matching passwords!");
+        alert("Passwords must match!")
+        return;
     }
 
-    // POST the user's data to the Register data model Uses AxiosInstance.tsx in the components folder
-    const api_response = await AxiosInstance.post("/api/register/",{
-      full_name: name,
-      email,
-      password
-    });
-    //Successful registration. User goes to login page
-    console.log("User Registered!");
-    navigate("/login"); 
-  
+    try {
+        await AxiosInstance.post("/api/reset-pass/", {
+        email,
+        password,
+        });
+
+        alert("Password successfully changed!");
+        navigate("/login");
+    } catch (error) {
+        console.error(error);
+        alert("Could not reset password!");
+    }
+
   };
 
   return (
@@ -46,23 +48,11 @@ export default function Signup() {
       <div className="auth-left-side">
         <div className="auth-card">
           <div className="auth-header">
-            <h1>Course Schedule Builder</h1>
-            <h2>Create Account</h2>
-            <p>Join us to start building your course schedule</p>
+            <h1>Reset Password</h1>
+            <h3>Enter your email and confirm password</h3>
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="name">Full Name</label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="John Doe"
-                className="form-input"
-              />
-            </div>
 
             <div className="form-group">
               <label htmlFor="email">Email Address</label>
@@ -79,7 +69,7 @@ export default function Signup() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">New Password</label>
               <input
                 id="password"
                 type="password"
@@ -94,7 +84,7 @@ export default function Signup() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
+              <label htmlFor="confirmPassword">Confirm New Password</label>
               <input
                 id="confirmPassword"
                 type="password"
@@ -113,7 +103,7 @@ export default function Signup() {
              */}
 
             <button type="submit" className="auth-button">
-              Create Account
+              Reset Password
             </button>
           </form>
 

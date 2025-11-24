@@ -57,27 +57,6 @@
   gap: 1rem;
 }
 
-.header-btn {
-  background: rgba(255, 255, 255, 0.95);
-  color: #667eea;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.header-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.header-btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
 
 .schedule-nav {
   display: flex;
@@ -124,21 +103,36 @@
 }
 
 .profile-btn {
-  background: rgba(255, 255, 255, 0.95);
-  color: #667eea;
-  border: none;
+  width: 48px;               
+  height: 48px;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  background: rgba(255, 255, 255, 0.95);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center;       
+  justify-content: center;   
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  padding: 0;                
 }
+
+.profile-btn svg {
+  width: 24px;              
+  height: 24px;
+  color: #667eea;
+  display: block;         
+}
+
+.profile-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 
 .profile-btn:hover {
   transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 1);
 }
 
 .profile-menu {
@@ -566,4 +560,36 @@
     height: 50px;
     font-size: 1.2rem;
   }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .profile-btn {
+    background: rgba(36, 36, 36, 0.95);
+  }
+
+  .profile-btn svg {
+    color: #818cf8;
+  }
+
+  .profile-btn:hover {
+    background: rgba(36, 36, 36, 1);
+  }
+}
+.course-conflict {
+  border: 2px solid #ff5c5c;
+  background: rgba(255, 92, 92, 0.15);
+  border-radius: 8px;
+}
+
+.course-conflict-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 4px;
+  margin-left: 8px;
 }

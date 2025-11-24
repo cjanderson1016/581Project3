@@ -5,7 +5,7 @@
  */
 
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 // Props for ScheduleHeader component
 interface ScheduleHeaderProps {
   scheduleName: string;
@@ -13,15 +13,19 @@ interface ScheduleHeaderProps {
 }
 
 // ScheduleHeader component
-export default function ScheduleHeader({
+export default function ScheduleHeader(
+  
+  {
   scheduleName,
   onScheduleNameChange,
 }: ScheduleHeaderProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const navigate = useNavigate();
 
   // Render schedule header
   return (
+
     <header className="schedule-header">
       <div className="schedule-header-left">
         {isEditing ? (
@@ -48,25 +52,24 @@ export default function ScheduleHeader({
             className="profile-btn"
             onClick={() => setShowProfileMenu(!showProfileMenu)}
           >
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+              <svg
+            fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+  >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
           </button>
 
           {/* Profile menu items */}
           {showProfileMenu && (
             <div className="profile-menu">
-              <button className="profile-menu-item">Settings</button>
-              <button className="profile-menu-item">My Schedules</button>
-              <button className="profile-menu-item">Log Out</button>
+              <button className="profile-menu-item" onClick={() => navigate("/settings")}>Settings</button>
+              <button className="profile-menu-item" onClick={() => navigate("/dashboard")}>My Schedules</button>
+              <button className="profile-menu-item" onClick={() => navigate("/login")}>Log Out</button>
             </div>
           )}
         </div>
