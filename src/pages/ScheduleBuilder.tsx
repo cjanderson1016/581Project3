@@ -19,6 +19,8 @@ import {
   createSchedule,
   buildSchedulePayload,
 } from "../services/scheduleService";
+import { fetchSchedule, updateSchedule } from "../services/scheduleService";
+import { useParams, useNavigate } from "react-router-dom";
 import CustomCourseMenu from "../components/CustomCourseMenu";
 import { fetchCurrentUser, updateCurrentUser } from "../services/userService";
 
@@ -31,6 +33,10 @@ export default function ScheduleBuilder() {
   const [isSearching, setIsSearching] = useState(false);
   const [possibleSchedules, setPossibleSchedules] = useState<Course[][]>([]);
   const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
+  const [loadedDisplayedIds, setLoadedDisplayedIds] = useState<number[] | null>(null);
+  const params = useParams();
+  const navigate = useNavigate();
+  const editingScheduleId = params.id ? Number(params.id) : undefined;
 
   //Custom Courses Menu
   const [isCustomMenuVisible, setIsCustomMenuVisible] = useState(false);
@@ -100,11 +106,83 @@ export default function ScheduleBuilder() {
       return;
     }
 
-    // TODO: make courses with different types (e.g. lecture, lab, discussion) be considered different courses when generating schedules so they show up together
     const schedules = generateSchedules(selectedCourses);
     setPossibleSchedules(schedules);
     setCurrentScheduleIndex(0);
+    // TODO: if we are loading a schedule, we want to find the courses that were displayed when it was saved
+    
   }, [selectedCourses]);
+
+  // If route contains an id, load that schedule for editing
+  useEffect(() => {
+    const loadSchedule = async (id: number) => {
+      try {
+        const s = await fetchSchedule(id);
+        // s should include selected_courses (array of Course)
+        if (s) {
+          setScheduleName(s.schedule_title || "Schedule Builder");
+          setSelectedCourses(
+            Array.isArray(s.selected_courses) ? s.selected_courses : []
+          ); // this triggers schedule generation
+          // capture displayed course ids so we can match generated schedules
+          if (Array.isArray(s.displayed_courses)) {
+            const ids = s.displayed_courses
+              .map((c: Course) => (typeof c.id === "number" ? c.id : undefined))
+              .filter((id: number | undefined): id is number => id !== undefined);
+            setLoadedDisplayedIds(ids.length > 0 ? ids : null);
+          }
+        }
+      } catch (err) {
+        console.error(`Failed to load schedule ${id}:`, err);
+      }
+    };
+
+    if (editingScheduleId) {
+      loadSchedule(editingScheduleId);
+    }
+  }, [editingScheduleId]);
+
+  // When possible schedules are generated, if we have loadedDisplayedIds from the backend,
+  // find the first generated schedule whose set of course ids matches the backend's displayed_courses.
+  useEffect(() => {
+    if (!loadedDisplayedIds || possibleSchedules.length === 0) return;
+
+    const targetSet = new Set(loadedDisplayedIds);
+    let matchIndex = -1;
+
+    for (let i = 0; i < possibleSchedules.length; i++) {
+      const schedule = possibleSchedules[i];
+      if (!schedule) continue;
+      const ids = schedule
+        .map((c) => (typeof c.id === "number" ? c.id : undefined))
+        .filter((id): id is number => id !== undefined);
+      const idSet = new Set(ids);
+      if (idSet.size === targetSet.size) {
+        let allPresent = true;
+        for (const id of targetSet) {
+          if (!idSet.has(id)) {
+            allPresent = false;
+            break;
+          }
+        }
+        if (allPresent) {
+          matchIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (matchIndex >= 0) {
+      setCurrentScheduleIndex(matchIndex);
+      // clear so we don't repeatedly attempt matching
+      setLoadedDisplayedIds(null);
+    } else {
+      // don't clear loadedDisplayedIds so we can retry when possibleSchedules changes again
+      console.warn(
+        "No generated schedule matched the backend displayed_courses ids yet; will retry when generation changes."
+      );
+    }
+  }, [possibleSchedules, loadedDisplayedIds]);
 
   const handleAddCourse = (displayCourse: DisplayCourse) => {
     // Add all sections from the selected DisplayCourse, avoiding duplicates by id
@@ -245,32 +323,35 @@ export default function ScheduleBuilder() {
         displayedCourses
       );
       console.log("Saving schedule payload:", payload);
-      const created = await createSchedule(payload);
-      console.log("Schedule created:", created);
+      if (editingScheduleId) {
+        // updating existing schedule
+        const updated = await updateSchedule(editingScheduleId, payload);
+        console.log("Schedule updated:", updated);
+        alert("Schedule updated successfully.");
+      } else {
+        const created = await createSchedule(payload);
+        console.log("Schedule created:", created);
 
-      // If user token exists, append new schedule id to their schedule_ids
-      const token = localStorage.getItem("session_token");
-      if (token && created && typeof created.id === "number") {
-        try {
-          const user = await fetchCurrentUser(token); // get the user based on the token
-          const existing: number[] = Array.isArray(user?.schedule_ids)
-            ? user.schedule_ids
-            : [];
-          if (!existing.includes(created.id)) {
-            // if the new schedule id is not present
-            const updated = [...existing, created.id]; // append it
-            await updateCurrentUser({ schedule_ids: updated }, token); // update user
-            setUserData((prev: any) => ({
-              ...(prev || {}),
-              schedule_ids: updated,
-            }));
+        // If user token exists, append new schedule id to their schedule_ids
+        const token = localStorage.getItem("session_token");
+        if (token && created && typeof created.id === "number") {
+          try {
+            const user = await fetchCurrentUser(token); // get the user based on the token
+            const existing: number[] = Array.isArray(user?.schedule_ids)
+              ? user.schedule_ids
+              : [];
+            if (!existing.includes(created.id)) {
+              // if the new schedule id is not present
+              const updated = [...existing, created.id]; // append it
+              await updateCurrentUser({ schedule_ids: updated }, token); // update user
+            }
+          } catch (err) {
+            console.error("Failed to update user's schedule_ids:", err);
           }
-        } catch (err) {
-          console.error("Failed to update user's schedule_ids:", err);
         }
-      }
 
-      alert("Schedule saved successfully.");
+        alert("Schedule saved successfully.");
+      }
     } catch (err) {
       console.error("Error saving schedule:", err);
       alert("Failed to save schedule. See console for details.");

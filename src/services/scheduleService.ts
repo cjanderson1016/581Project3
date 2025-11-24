@@ -43,8 +43,8 @@ export function buildSchedulePayload(
   selected: Course[],
   displayed: Course[]
 ): SchedulePayload {
-  const selected_ids = selected.map((c) => c.id);
-  const displayed_ids = displayed.map((d) => d.id);
+  const selected_ids = selected.map((c) => c.id).filter((id): id is number => typeof id === "number");
+  const displayed_ids = displayed.map((d) => d.id).filter((id): id is number => typeof id === "number");
 
   const payload: Partial<SchedulePayload> = {
     schedule_title: title,
