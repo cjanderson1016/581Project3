@@ -1,5 +1,5 @@
 // scheduleGenerator.ts
-// Creates all schedules that aren't conflicting from the selected courses
+// Creates all schedules that are not conflicting from the selected courses
 
 import type { Course } from "../models/Course";
 
@@ -19,26 +19,27 @@ const dayMap: Record<string, number> = {
 function parseDays(days: string): number[] {
   if (!days) return [];
 
-  const dayNumbers: number[] = [];
-  let i = 0;
+  const result: number[] = [];
 
-  while (i < days.length) {
-    if (i + 1 < days.length) {
-      const twoChar = days.substring(i, i + 2);
-      if (dayMap[twoChar] !== undefined) {
-        dayNumbers.push(dayMap[twoChar]!);
-        i += 2;
-        continue;
-      }
+  for (let i = 0; i < days.length; i++) {
+    const two = days.slice(i, i + 2);
+    const one = days[i];
+
+    // Two letter codes first (Tu, Th, Su, Sa)
+    if (dayMap[two] !== undefined) {
+      result.push(dayMap[two]!);
+      i++; // skip next char because we consumed two
+      continue;
     }
-    const oneChar = days[i];
-    if (oneChar && dayMap[oneChar] !== undefined) {
-      dayNumbers.push(dayMap[oneChar]!);
+
+    // Single letter codes (M, W, F, etc.)
+    if (dayMap[one] !== undefined) {
+      result.push(dayMap[one]!);
     }
-    i++;
   }
 
-  return [...new Set(dayNumbers)].sort();
+  // Remove duplicates and sort for consistency
+  return [...new Set(result)].sort();
 }
 
 function convertTo24Hour(time: string): string {
@@ -68,7 +69,7 @@ function coursesConflict(a: Course, b: Course): boolean {
   const daysA = parseDays(a.days);
   const daysB = parseDays(b.days);
 
-  // any shared day?
+  // any shared day
   const sharedDay = daysA.some((d) => daysB.includes(d));
   if (!sharedDay) return false;
 
@@ -80,7 +81,6 @@ function coursesConflict(a: Course, b: Course): boolean {
   // overlap if one starts before the other ends and vice versa
   return aStart < bEnd && bStart < aEnd;
 }
-
 
 export function generateSchedules(selectedCourses: Course[]): Course[][] {
   if (selectedCourses.length === 0) return [];
@@ -98,7 +98,6 @@ export function generateSchedules(selectedCourses: Course[]): Course[][] {
   }
 
   const groups = Array.from(groupsMap.values());
-
   const result: Course[][] = [];
 
   function backtrack(groupIndex: number, current: Course[]) {
@@ -121,13 +120,14 @@ export function generateSchedules(selectedCourses: Course[]): Course[][] {
 
   backtrack(0, []);
 
-  // if  nothing valid fall back to everything you picked
+  // if nothing valid, fall back to everything you picked
   if (result.length === 0) {
     result.push([...selectedCourses]);
   }
 
   return result;
 }
+
 // UI warnings for conflicting courses
 export function findConflictingCourseIds(courses: Course[]): number[] {
   const conflicts = new Set<number>();
@@ -145,4 +145,3 @@ export function findConflictingCourseIds(courses: Course[]): number[] {
 
   return Array.from(conflicts);
 }
-
