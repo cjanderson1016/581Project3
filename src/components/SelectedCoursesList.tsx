@@ -17,6 +17,8 @@ interface SelectedCoursesListProps {
 export default function SelectedCoursesList({
   courses,
   onRemoveCourse,
+  conflictingIds = [],
+
 }: SelectedCoursesListProps) {
   if (courses.length === 0) {
     return (
