@@ -10,6 +10,7 @@ import type { DisplayCourse } from "../models/Course";
 interface SelectedCoursesListProps {
   courses: DisplayCourse[];
   onRemoveCourse: (course: DisplayCourse) => void;
+  conflictingIds?: number[];
 }
 
 // SelectedCoursesList component - now shows one entry per course (grouped sections)
