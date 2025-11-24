@@ -1,5 +1,8 @@
-// scheduleGenerator.ts
-// Creates all schedules that are not conflicting from the selected courses
+/*
+ * scheduleGenerator.ts
+ * Date: November 23, 2025
+ * Description: Utility functions to generate valid course schedules without conflicts
+ */
 
 import type { Course } from "../models/Course";
 
@@ -16,6 +19,7 @@ const dayMap: Record<string, number> = {
   Sa: 6,
 };
 
+// Parse the days string (a subset of "SuMTuWThFSa") into array of day indices
 function parseDays(days: string): number[] {
   if (!days) return [];
 
@@ -42,6 +46,7 @@ function parseDays(days: string): number[] {
   return [...new Set(result)].sort();
 }
 
+// Convert time string (e.g., "2:30 PM") to 24-hour format "HH:MM"
 function convertTo24Hour(time: string): string {
   if (!time) return "00:00";
 
@@ -60,11 +65,13 @@ function convertTo24Hour(time: string): string {
   return `${hours.toString().padStart(2, "0")}:${minutes}`;
 }
 
+// Convert time string to total minutes since midnight
 function timeToMinutes(time: string): number {
   const [h, m] = convertTo24Hour(time).split(":").map(Number);
   return h * 60 + m;
 }
 
+// Check if two courses conflict in time
 function coursesConflict(a: Course, b: Course): boolean {
   const daysA = parseDays(a.days);
   const daysB = parseDays(b.days);
@@ -82,6 +89,7 @@ function coursesConflict(a: Course, b: Course): boolean {
   return aStart < bEnd && bStart < aEnd;
 }
 
+// Generate all possible non-conflicting schedules from selected courses
 export function generateSchedules(selectedCourses: Course[]): Course[][] {
   if (selectedCourses.length === 0) return [];
 

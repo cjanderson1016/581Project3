@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchCurrentUser } from "../services/userService";
 import { fetchSchedule } from "../services/scheduleService";
 
+// Interface for saved schedule data -- only includes fields needed for display
 interface SavedSchedule {
   id: number;
   title: string;
@@ -26,45 +27,51 @@ export default function Dashboard() {
   const [savedSchedules, setSavedSchedules] = useState<SavedSchedule[]>([]);
   const [user, setUser] = useState<any>(null);
 
+  // The following runs once on component mount to fetch user info and schedules
   useEffect(() => {
+    // Load user and their saved schedules
     const loadUserAndSchedules = async () => {
-      const token = localStorage.getItem("session_token");
+      const token = localStorage.getItem("session_token"); // Get token from local storage
       try {
-        const u = await fetchCurrentUser(token || undefined);
-        setUser(u);
+        const u = await fetchCurrentUser(token || undefined); // Fetch current user
+        setUser(u); // Set user state
 
-        const ids: number[] = Array.isArray(u?.schedule_ids)
+        const ids: number[] = Array.isArray(u?.schedule_ids) // Extract the user's schedule IDs
           ? u.schedule_ids
           : [];
         if (ids.length > 0) {
+          // If user has saved schedules, fetch their details
           const schedules = await Promise.all(
             ids.map(async (id) => {
               try {
-                const s = await fetchSchedule(id);
+                const s = await fetchSchedule(id); // Fetch schedule details
                 return {
                   id: s.id,
                   title: s.schedule_title,
                   lastEdited: s.last_updated_date,
                 } as SavedSchedule;
               } catch (err) {
+                // Handle schedule fetch errors
                 console.error(`Failed to fetch schedule ${id}:`, err);
                 return null;
               }
             })
           );
 
-          setSavedSchedules(schedules.filter((s): s is SavedSchedule => !!s));
+          setSavedSchedules(schedules.filter((s): s is SavedSchedule => !!s)); // Update state with fetched schedules
         }
       } catch (err) {
+        // Handle user fetch errors
         console.error("Unable to find user:", err);
       }
     };
 
-    loadUserAndSchedules();
-  }, []);
+    loadUserAndSchedules(); // Invoke the async function to load data
+  }, []); // Empty dependency array ensures this runs only once on mount
 
+  // Handle profile icon click to toggle menu
   const handleProfileClick = () => {
-    setShowProfileMenu(!showProfileMenu);
+    setShowProfileMenu(!showProfileMenu); // Toggle menu visibility
     console.log("Profile clicked");
   };
 
@@ -101,7 +108,12 @@ export default function Dashboard() {
             </div>
             {showProfileMenu && (
               <div className="profile-menu">
-                <button className="profile-menu-item" onClick={() => navigate("/settings")}>Settings</button>
+                <button
+                  className="profile-menu-item"
+                  onClick={() => navigate("/settings")}
+                >
+                  Settings
+                </button>
                 <button
                   className="profile-menu-item"
                   onClick={() => navigate("/login")}
