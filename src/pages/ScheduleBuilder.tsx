@@ -571,7 +571,6 @@ export default function ScheduleBuilder() {
           {hasConflicts ? (
             <div className="conflict-calendar-placeholder">
               Cannot display schedule while there are time conflicts. 
-              Adjust your selected courses until the conflict warning clears.
             </div>
           ) : (
             <CalendarView
