@@ -551,7 +551,7 @@ export default function ScheduleBuilder() {
               Some selected courses overlap in time.
             </div>
           )}
-          {/* Action Buttons */}
+                    {/* Action Buttons */}
           <div className="schedule-actions">
             <button
               onClick={handleSave}
@@ -567,11 +567,20 @@ export default function ScheduleBuilder() {
             </button>
           </div>
 
-          <CalendarView
-            courses={displayedCourses}
-            onRemoveCourse={handleRemoveCourse}
-          />
+        
+          {hasConflicts ? (
+            <div className="conflict-calendar-placeholder">
+              Cannot display schedule while there are time conflicts. 
+              Adjust your selected courses until the conflict warning clears.
+            </div>
+          ) : (
+            <CalendarView
+              courses={displayedCourses}
+              onRemoveCourse={handleRemoveCourse}
+            />
+          )}
         </main>
+
       </div>
     </div>
   );
