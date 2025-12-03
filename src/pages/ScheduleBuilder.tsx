@@ -30,7 +30,7 @@ import CustomCourseMenu from "../components/CustomCourseMenu";
 import { fetchCurrentUser, updateCurrentUser } from "../services/userService";
 
 export default function ScheduleBuilder() {
-  const [scheduleName, setScheduleName] = useState("Schedule Builder"); // default name before loading/editing
+  const [scheduleName, setScheduleName] = useState("Weekly Schedule"); // default name before loading/editing
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]); // all selected Course sections pertaining to selected DisplayCourses (unique conbinations of subject/course_number ex. "EECS 168")
 
   const [searchQuery, setSearchQuery] = useState(""); // text in search box

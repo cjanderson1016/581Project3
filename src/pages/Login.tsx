@@ -55,7 +55,7 @@ export default function Login() {
       <div className="auth-left-side">
         <div className="auth-card">
           <div className="auth-header">
-            <h1>Course Schedule Builder</h1>
+            <h1>Course Semester Planner</h1>
             <h2>Welcome Back</h2>
             <p>Sign in to manage your course schedule</p>
           </div>
