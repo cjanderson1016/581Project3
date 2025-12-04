@@ -30,7 +30,7 @@ import CustomCourseMenu from "../components/CustomCourseMenu";
 import { fetchCurrentUser, updateCurrentUser } from "../services/userService";
 
 export default function ScheduleBuilder() {
-  const [scheduleName, setScheduleName] = useState("Schedule Builder"); // default name before loading/editing
+  const [scheduleName, setScheduleName] = useState("Weekly Schedule"); // default name before loading/editing
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]); // all selected Course sections pertaining to selected DisplayCourses (unique conbinations of subject/course_number ex. "EECS 168")
 
   const [searchQuery, setSearchQuery] = useState(""); // text in search box
@@ -551,7 +551,7 @@ export default function ScheduleBuilder() {
               Some selected courses overlap in time.
             </div>
           )}
-          {/* Action Buttons */}
+                    {/* Action Buttons */}
           <div className="schedule-actions">
             <button
               onClick={handleSave}
@@ -567,11 +567,19 @@ export default function ScheduleBuilder() {
             </button>
           </div>
 
-          <CalendarView
-            courses={displayedCourses}
-            onRemoveCourse={handleRemoveCourse}
-          />
+        
+          {hasConflicts ? (
+            <div className="conflict-calendar-placeholder">
+              Cannot display schedule while there are time conflicts. 
+            </div>
+          ) : (
+            <CalendarView
+              courses={displayedCourses}
+              onRemoveCourse={handleRemoveCourse}
+            />
+          )}
         </main>
+
       </div>
     </div>
   );

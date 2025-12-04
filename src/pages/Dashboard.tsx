@@ -11,6 +11,7 @@ import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { fetchCurrentUser } from "../services/userService";
 import { fetchSchedule } from "../services/scheduleService";
+import {isAdmin} from "../components/isAdmin"
 
 // Interface for saved schedule data -- only includes fields needed for display
 interface SavedSchedule {
@@ -20,10 +21,8 @@ interface SavedSchedule {
 }
 
 export default function Dashboard() {
-  const [name, setName] = useState("");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
-  const [isSignedIn, setIsSignedIn] = useState(true); // Toggle for demo purposes
   const [savedSchedules, setSavedSchedules] = useState<SavedSchedule[]>([]);
   const [user, setUser] = useState<any>(null);
 
@@ -87,9 +86,14 @@ export default function Dashboard() {
           <h1 className="dashboard-title">My Schedules</h1>
         </div>
         <div className="header-right">
-          <div className="display-user-fullname">
+  
+            {isAdmin(user) ? 
+            <div className="display-admin">
+            <p>Welcome, Admin</p>
+            </div> : 
+            <div className="display-user-fullname">
             <p>Welcome, {user?.full_name}</p>
-          </div>
+            </div>}
           <div className="profile-dropdown">
             <div className="profile-icon" onClick={handleProfileClick}>
               <svg
@@ -114,6 +118,14 @@ export default function Dashboard() {
                 >
                   Settings
                 </button>
+                {isAdmin(user) && (
+                                  <button
+                  className="profile-menu-item"
+                  onClick={() => navigate("/elevate")}
+                >
+                  Elevate User
+                </button>
+                )}
                 <button
                   className="profile-menu-item"
                   onClick={() => navigate("/login")}
